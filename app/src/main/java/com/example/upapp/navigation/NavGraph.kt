@@ -1,3 +1,8 @@
+@file:OptIn(
+    androidx.compose.material3.ExperimentalMaterial3Api::class,
+    androidx.media3.common.util.UnstableApi::class
+)
+
 package com.example.upapp.navigation
 
 import androidx.compose.foundation.layout.Box
@@ -11,6 +16,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.upapp.screens.LoginScreen
+import com.example.upapp.screens.RadioScreen
 import com.example.upapp.screens.SupportScreen
 import com.example.upapp.ui.theme.DarkGray
 
@@ -40,13 +46,13 @@ fun NavGraph(
         }
 
         // 2. Pantalla de Soporte / Recuperación de contraseña
-                composable(route = Screen.Support.route) {
-                    SupportScreen(
-                        onBackToLoginClick = {
-                            navController.popBackStack() // Regresa a la pantalla de Login
-                        }
-                    )
+        composable(route = Screen.Support.route) {
+            SupportScreen(
+                onBackToLoginClick = {
+                    navController.popBackStack() // Regresa a la pantalla de Login
                 }
+            )
+        }
 
         // 3. Pantalla de Inicio / Dashboard (Integrante 2)
         composable(route = Screen.Home.route) {
@@ -85,7 +91,11 @@ fun NavGraph(
 
         // 10. UPA Radio (Integrante 2)
         composable(route = Screen.Radio.route) {
-            PlaceholderScreen(title = "UPÅradio")
+            RadioScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

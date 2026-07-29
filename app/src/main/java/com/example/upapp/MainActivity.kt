@@ -1,3 +1,8 @@
+@file:OptIn(
+    androidx.compose.material3.ExperimentalMaterial3Api::class,
+    androidx.media3.common.util.UnstableApi::class
+)
+
 package com.example.upapp
 
 import android.os.Bundle
@@ -8,13 +13,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.compose.rememberNavController
-import com.example.upapp.navigation.NavGraph
+import com.example.upapp.screens.RadioScreen
 import com.example.upapp.ui.theme.UPAPPTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Inicializa la Splash Screen antes del super.onCreate
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
@@ -24,8 +27,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-                    NavGraph(navController = navController)
+                    RadioScreen()
                 }
             }
         }
