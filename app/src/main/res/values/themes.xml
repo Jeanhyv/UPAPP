@@ -2,4 +2,15 @@
 <resources>
 
     <style name="Theme.UPAPP" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Tema para la Splash Screen -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- Fondo de la pantalla de inicio (Blanco) -->
+        <item name="windowSplashScreenBackground">@android:color/white</item>
+
+        <!-- Icono centrado al iniciar -->
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+
+        <!-- Tema al que cambiará la app una vez que cargue -->
+        <item name="postSplashScreenTheme">@style/Theme.UPAPP</item>
+    </style>
 </resources>
