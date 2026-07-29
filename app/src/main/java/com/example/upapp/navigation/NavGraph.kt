@@ -19,6 +19,7 @@ import com.example.upapp.screens.LoginScreen
 import com.example.upapp.screens.RadioScreen
 import com.example.upapp.screens.SupportScreen
 import com.example.upapp.ui.theme.DarkGray
+import com.example.upapp.ui.screens.UpappScreen
 
 @Composable
 fun NavGraph(
@@ -56,7 +57,7 @@ fun NavGraph(
 
         // 3. Pantalla de Inicio / Dashboard (Integrante 2)
         composable(route = Screen.Home.route) {
-            PlaceholderScreen(title = "Pantalla Principal (Home)")
+            UpappScreen()
         }
 
         // 4. Credencial Digital (Integrante 3)
