@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.upapp.R
 import com.example.upapp.components.AppTopBar
-import com.example.upapp.components.CustomAppDrawer
+import com.example.upapp.components.AppDrawer
 import kotlinx.coroutines.launch
 
 // Colores institucionales
@@ -47,7 +47,7 @@ fun HomeScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            CustomAppDrawer(
+            AppDrawer(
                 onNavigateToCalendar = onNavigateToCalendar,
                 onCloseDrawer = {
                     scope.launch { drawerState.close() }

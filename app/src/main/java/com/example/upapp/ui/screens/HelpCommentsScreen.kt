@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.upapp.components.AppTopBar
-import com.example.upapp.components.CustomAppDrawer
+import com.example.upapp.components.AppDrawer
 import com.example.upapp.navigation.Screen
 import kotlinx.coroutines.launch
 
@@ -50,7 +50,7 @@ fun HelpCommentsScreen(navController: NavController) {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            CustomAppDrawer(
+            AppDrawer(
                 onNavigateToCalendar = {
                     scope.launch { drawerState.close() }
                     navController.navigate(Screen.CalendarEvents.route)

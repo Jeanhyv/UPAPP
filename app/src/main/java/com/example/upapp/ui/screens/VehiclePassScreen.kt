@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.upapp.R
 import com.example.upapp.components.AppTopBar
-import com.example.upapp.components.CustomAppDrawer
+import com.example.upapp.components.AppDrawer
 import com.example.upapp.ui.components.QrCardView
 import kotlinx.coroutines.launch
 
@@ -73,7 +73,7 @@ fun VehiclePassScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            CustomAppDrawer(
+            AppDrawer(
                 onNavigateToCalendar = {
                     scope.launch { drawerState.close() }
                     onNavigateToCalendar()
