@@ -35,7 +35,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.upapp.R
 import com.example.upapp.components.AppTopBar
-import com.example.upapp.components.CustomAppDrawer
+import com.example.upapp.components.AppDrawer
 import com.example.upapp.navigation.Screen
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -120,7 +120,7 @@ fun CalendarEventsScreen(navController: NavController) {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            CustomAppDrawer(
+            AppDrawer(
                 onNavigateToCalendar = {
                     navController.navigate(Screen.CalendarEvents.route)
                 },

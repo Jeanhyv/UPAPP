@@ -35,7 +35,7 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import com.example.upapp.components.AppTopBar
-import com.example.upapp.components.CustomAppDrawer
+import com.example.upapp.components.AppDrawer
 import com.example.upapp.ui.theme.*
 import kotlinx.coroutines.launch
 
@@ -124,7 +124,7 @@ fun RadioScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            CustomAppDrawer(
+            AppDrawer(
                 onNavigateToCalendar = {
                     scope.launch { drawerState.close() }
                     onNavigateToCalendar()

@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.upapp.R
 import com.example.upapp.components.AppTopBar
-import com.example.upapp.components.CustomAppDrawer
+import com.example.upapp.components.AppDrawer
 import com.example.upapp.navigation.Screen
 import kotlinx.coroutines.launch
 
@@ -48,7 +48,7 @@ fun DocumentsScreen(navController: NavController) {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            CustomAppDrawer(
+            AppDrawer(
                 onNavigateToCalendar = {
                     navController.navigate(Screen.CalendarEvents.route)
                 },
