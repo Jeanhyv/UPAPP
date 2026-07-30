@@ -1,8 +1,3 @@
-@file:OptIn(
-    androidx.compose.material3.ExperimentalMaterial3Api::class,
-    androidx.media3.common.util.UnstableApi::class
-)
-
 package com.example.upapp.navigation
 
 import androidx.compose.foundation.layout.Box

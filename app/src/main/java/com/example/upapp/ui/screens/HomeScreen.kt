@@ -1,4 +1,4 @@
-package com.example.upapp.ui.screens
+package com.example.upapp.ui.screens // Asegúrate de que este paquete coincida con el tuyo
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.upapp.R
 
 // Colores extraídos de la imagen original
 val GreenBarColor = Color(0xFFC7D6BA)
@@ -39,11 +38,14 @@ fun UpappScreen() {
                 title = {
                     // 🟢 AQUÍ VA EL LOGO PRINCIPAL (UPAPP) EN EL CENTRO
                     // Reemplaza el Box con: Image(painter = painterResource(id = R.drawable.tu_logo_upapp), ...)
-                    Image(
-                        painter = painterResource(id = R.drawable.home), // Sin la extensión .png
-                        contentDescription = "Descripción de la imagen", // Obligatorio (puede ser null)
-                        modifier = Modifier.fillMaxSize() // Opcional: para que se ajuste al tamaño del Box
-                    )
+                    Box(
+                        modifier = Modifier
+                            .width(100.dp)
+                            .height(40.dp)
+                            .background(Color.LightGray) // Borrar background al poner la imagen
+                    ) {
+                        Text("LOGO UPAPP", fontSize = 12.sp, modifier = Modifier.align(Alignment.Center))
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = { /* Acción del menú de hamburguesa */ }) {
