@@ -1,8 +1,3 @@
-@file:OptIn(
-    androidx.compose.material3.ExperimentalMaterial3Api::class,
-    androidx.media3.common.util.UnstableApi::class
-)
-
 package com.example.upapp.navigation
 
 import androidx.compose.foundation.layout.Box
@@ -19,8 +14,8 @@ import com.example.upapp.screens.LoginScreen
 import com.example.upapp.screens.RadioScreen
 import com.example.upapp.screens.SupportScreen
 import com.example.upapp.ui.theme.DarkGray
-import com.example.upapp.screens.CalendarEventsScreen
-import com.example.upapp.screens.MapScreen
+import com.example.upapp.ui.screens.UpappScreen
+
 @Composable
 fun NavGraph(
     navController: NavHostController,
@@ -57,7 +52,7 @@ fun NavGraph(
 
         // 3. Pantalla de Inicio / Dashboard (Integrante 2)
         composable(route = Screen.Home.route) {
-            PlaceholderScreen(title = "Pantalla Principal (Home)")
+            UpappScreen()
         }
 
         // 4. Credencial Digital (Integrante 3)
@@ -72,28 +67,18 @@ fun NavGraph(
 
         // 6. Calendario y Eventos (Integrante 2)
         composable(route = Screen.CalendarEvents.route) {
-            CalendarEventsScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                }
-            )
+            PlaceholderScreen(title = "Calendario y Eventos")
         }
+
         // 7. Alertas Agroclimáticas (Integrante 4)
         composable(route = Screen.AgroAlerts.route) {
             PlaceholderScreen(title = "Alertas Agroclimáticas")
         }
 
-        // Pantalla del Croquis 2026
-                composable(route = Screen.Map.route) {
-                    MapScreen(
-                        onBackClick = {
-                            // Regresa a la pantalla anterior si hay historial, o va a Home
-                            if (!navController.popBackStack()) {
-                                navController.navigate(Screen.Home.route)
-                            }
-                        }
-                    )
-                }
+        // 8. Mapa / Croquis (Integrante 4)
+        composable(route = Screen.Map.route) {
+            PlaceholderScreen(title = "Croquis del Campus")
+        }
 
         // 9. Documentos (Integrante 4)
         composable(route = Screen.Documents.route) {

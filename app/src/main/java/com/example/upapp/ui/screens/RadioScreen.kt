@@ -48,8 +48,7 @@ fun isNetworkAvailable(context: Context): Boolean {
     return activeNetwork.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }
 
-@OptIn(UnstableApi::class)
-@ExperimentalMaterial3Api
+@OptIn(androidx.media3.common.util.UnstableApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun RadioScreen(
     onBackClick: () -> Unit = {}

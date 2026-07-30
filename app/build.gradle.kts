@@ -46,6 +46,18 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    implementation("androidx.navigation:navigation-compose:2.8.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-ui:1.3.1")
+    implementation("androidx.compose.material:material-icons-extended")
+
+    // Generación de códigos QR
+    implementation("com.google.zxing:core:3.5.4")
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
@@ -53,11 +65,4 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    implementation("androidx.navigation:navigation-compose:2.8.0") // O la versión que tengas
-    implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.media3:media3-exoplayer:1.3.1")
-    implementation("androidx.media3:media3-ui:1.3.1")
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation("com.google.zxing:core:3.5.4")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
