@@ -10,7 +10,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.example.upapp.screens.MapScreen
+import androidx.navigation.compose.rememberNavController
+import com.example.upapp.navigation.NavGraph
 import com.example.upapp.ui.theme.UPAPPTheme
 
 class MainActivity : ComponentActivity() {
@@ -25,13 +26,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Carga directamente la pantalla del Croquis 2026
-                    MapScreen(
-                        onBackClick = {
-                            // Acción al dar clic en la casa/regresar
-                            finish()
-                        }
-                    )
+                    // 1. Creamos el controlador que gestiona el historial de pantallas
+                    val navController = rememberNavController()
+
+                    // 2. Ejecutamos el árbol de navegación completo (arrancará en Login)
+                    NavGraph(navController = navController)
                 }
             }
         }
