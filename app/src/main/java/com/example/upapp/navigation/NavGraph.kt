@@ -11,11 +11,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.upapp.screens.LoginScreen
-import com.example.upapp.screens.RadioScreen
 import com.example.upapp.screens.SupportScreen
+import com.example.upapp.ui.screens.AgroAlertsScreen
+import com.example.upapp.ui.screens.DocumentsScreen
 import com.example.upapp.ui.theme.DarkGray
-import com.example.upapp.ui.screens.UpappScreen
-
+import com.example.upapp.ui.screens.HomeScreen
+import com.example.upapp.ui.screens.MapScreen
+import com.example.upapp.ui.screens.RadioScreen
+import com.example.upapp.ui.screens.CalendarEventsScreen
+// Ajusta 'ui.screens' según la estructura real de carpetas de tu proyecto
 @Composable
 fun NavGraph(
     navController: NavHostController,
@@ -29,13 +33,11 @@ fun NavGraph(
         composable(route = Screen.Login.route) {
             LoginScreen(
                 onLoginSuccess = {
-                    // Al validar credenciales con éxito, va a Home y borra Login del historial
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
                 onForgotPasswordClick = {
-                    // Al pulsar "¿Olvidaste tu contraseña?", va a Soporte
                     navController.navigate(Screen.Support.route)
                 }
             )
@@ -45,47 +47,63 @@ fun NavGraph(
         composable(route = Screen.Support.route) {
             SupportScreen(
                 onBackToLoginClick = {
-                    navController.popBackStack() // Regresa a la pantalla de Login
+                    navController.popBackStack()
                 }
             )
         }
 
-        // 3. Pantalla de Inicio / Dashboard (Integrante 2)
+        // 3. Pantalla de Inicio / Dashboard (UpappScreen)
         composable(route = Screen.Home.route) {
-            UpappScreen()
+            HomeScreen(
+                onNavigateToMap = {
+                    navController.navigate(Screen.Map.route)
+                },
+                onNavigateToRadio = {
+                    navController.navigate(Screen.Radio.route)
+                },
+                onNavigateToCalendar = {
+                    navController.navigate(Screen.CalendarEvents.route)
+                },
+                onNavigateToDocuments = {
+                    navController.navigate(Screen.Documents.route)
+                },
+                onNavigateToAgroAlerts = {
+                    navController.navigate(Screen.AgroAlerts.route)
+                }
+            )
         }
-
-        // 4. Credencial Digital (Integrante 3)
+        // 4. Credencial Digital
         composable(route = Screen.ProfileCredential.route) {
             PlaceholderScreen(title = "Credencial Estudiantil Digital")
         }
 
-        // 5. Tarjetón Vehicular (Integrante 3)
+        // 5. Tarjetón Vehicular
         composable(route = Screen.VehiclePass.route) {
             PlaceholderScreen(title = "Tarjetón Vehicular")
         }
 
-        // 6. Calendario y Eventos (Integrante 2)
+        // 6. Calendario y Eventos
+// 6. Calendario y Eventos
         composable(route = Screen.CalendarEvents.route) {
-            PlaceholderScreen(title = "Calendario y Eventos")
+            CalendarEventsScreen(navController = navController)
         }
 
-        // 7. Alertas Agroclimáticas (Integrante 4)
+        // 7. Alertas Agroclimáticas (PANTALLA REAL)
         composable(route = Screen.AgroAlerts.route) {
-            PlaceholderScreen(title = "Alertas Agroclimáticas")
+            AgroAlertsScreen(navController = navController)
         }
 
-        // 8. Mapa / Croquis (Integrante 4)
+        // 8. Mapa / Croquis
         composable(route = Screen.Map.route) {
-            PlaceholderScreen(title = "Croquis del Campus")
+            MapScreen(navController = navController)
         }
 
-        // 9. Documentos (Integrante 4)
+        // 9. Documentos (PANTALLA REAL)
         composable(route = Screen.Documents.route) {
-            PlaceholderScreen(title = "Documentos del Alumno")
+            DocumentsScreen(navController = navController)
         }
 
-        // 10. UPA Radio (Integrante 2)
+        // 10. UPA Radio
         composable(route = Screen.Radio.route) {
             RadioScreen(
                 onBackClick = {
@@ -96,7 +114,6 @@ fun NavGraph(
     }
 }
 
-// Componente temporal para probar la navegación a pantallas que aún no están creadas
 @Composable
 private fun PlaceholderScreen(title: String) {
     Box(

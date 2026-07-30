@@ -26,10 +26,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // 1. Creamos el controlador que gestiona el historial de pantallas
+                    // 1. Creamos el controlador que gestiona la navegación de la app
                     val navController = rememberNavController()
 
-                    // 2. Ejecutamos el árbol de navegación completo (arrancará en Login)
+                    // 2. Ejecutamos el árbol de navegación completo
                     NavGraph(navController = navController)
                 }
             }

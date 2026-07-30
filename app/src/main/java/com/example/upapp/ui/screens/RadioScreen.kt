@@ -1,4 +1,4 @@
-package com.example.upapp.screens
+package com.example.upapp.ui.screens
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -11,9 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
@@ -26,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.MediaItem
@@ -37,9 +34,12 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import com.example.upapp.components.AppTopBar
+import com.example.upapp.components.CustomAppDrawer
 import com.example.upapp.ui.theme.*
+import kotlinx.coroutines.launch
 
-// Verificar conectividad de red
+// Función para verificar conectividad de red
 fun isNetworkAvailable(context: Context): Boolean {
     val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -48,19 +48,23 @@ fun isNetworkAvailable(context: Context): Boolean {
     return activeNetwork.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }
 
-@OptIn(androidx.media3.common.util.UnstableApi::class, ExperimentalMaterial3Api::class)
+@OptIn(UnstableApi::class)
 @Composable
 fun RadioScreen(
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onNavigateToCalendar: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    // Recuerda colocar aquí la URL directa del stream funcional de tu servidor:
-    val streamUrl = "https://getting-shadows-sit-classes.trycloudflare.com/stream"
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    // URL del stream en vivo de la universidad
+    val streamUrl = "https://exec-classics-differently-sim.trycloudflare.com/stream"
     var isPlaying by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // Configuración de conector HTTP
+    // Configuración HTTP DataSource para ExoPlayer
     val httpDataSourceFactory = remember {
         DefaultHttpDataSource.Factory()
             .setUserAgent("UPAPP-RadioPlayer/1.0 (Android)")
@@ -73,7 +77,7 @@ fun RadioScreen(
         DefaultMediaSourceFactory(httpDataSourceFactory)
     }
 
-    // Player ExoPlayer
+    // Instancia de ExoPlayer
     val exoPlayer = remember {
         ExoPlayer.Builder(context)
             .setMediaSourceFactory(mediaSourceFactory)
@@ -87,6 +91,7 @@ fun RadioScreen(
             }
     }
 
+    // Ciclo de vida y listeners de la reproducción
     DisposableEffect(Unit) {
         val listener = object : Player.Listener {
             override fun onIsPlayingChanged(playing: Boolean) {
@@ -111,255 +116,202 @@ fun RadioScreen(
         }
     }
 
-    // Colores basados en el diseño de la imagen
-    val headerFooterBg = Color(0xFFC7DCB8) // Verde claro institucional
-    val dialBackground = Color(0xFFCBE3EB)  // Azul grisáceo
+    // Colores del reproductor
+    val headerFooterBg = Color(0xFFC7DCB8)
+    val dialBackground = Color(0xFFCBE3EB)
     val darkGreenText = Color(0xFF1B7339)
-    val dotMagentaColor = Color(0xFFD81B60) // Punto morado/fucsia sobre la Å
 
-    Scaffold(
-        topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(headerFooterBg)
-                    .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Icono de salida
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                        contentDescription = "Salir",
-                        tint = Color.Black,
-                        modifier = Modifier.size(28.dp)
-                    )
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            CustomAppDrawer(
+                onNavigateToCalendar = {
+                    scope.launch { drawerState.close() }
+                    onNavigateToCalendar()
+                },
+                onCloseDrawer = {
+                    scope.launch { drawerState.close() }
                 }
-
-                // Título UPÅradio
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "UP",
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = darkGreenText
-                    )
-                    Box(contentAlignment = Alignment.TopCenter) {
-                        Text(
-                            text = "A",
-                            fontSize = 26.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = darkGreenText
-                        )
-                        // Punto magenta característico sobre la A
-                        Box(
-                            modifier = Modifier
-                                .offset(y = (-2).dp)
-                                .size(6.dp)
-                                .clip(CircleShape)
-                                .background(dotMagentaColor)
-                        )
-                    }
-                    Text(
-                        text = "radio",
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                }
-
-                // Icono Micrófono
-                Icon(
-                    imageVector = Icons.Default.Mic,
-                    contentDescription = "Emisora",
-                    tint = darkGreenText,
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-        },
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(headerFooterBg)
-                    .navigationBarsPadding()
-                    .padding(vertical = 12.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = "Inicio",
-                        tint = darkGreenText,
-                        modifier = Modifier.size(36.dp)
-                    )
-                }
-            }
+            )
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(dialBackground),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // --- DIAL DE RADIO (CANVAS CON LÍNEAS DE FRECUENCIA Y AGUJA) ---
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
-                    .padding(top = 10.dp)
-            ) {
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val width = size.width
-                    val lineCount = 45
-                    val spacing = width / (lineCount + 1)
-                    val lineTop = 60f
-                    val lineBottom = 170f
-
-                    // Dibujar líneas verticales del dial
-                    for (i in 1..lineCount) {
-                        val x = spacing * i
-                        drawLine(
-                            color = Color.Black,
-                            start = Offset(x, lineTop),
-                            end = Offset(x, lineBottom),
-                            strokeWidth = 3f
-                        )
-                    }
-
-                    // Aguja de la Frecuencia (Sintonizada aprox en 87.3)
-                    val needleX = spacing * 13.5f
-                    val needleTop = 10f
-                    val needleBottom = 185f
-
-                    // Línea vertical larga de la aguja
-                    drawLine(
-                        color = Color.Black,
-                        start = Offset(needleX, needleTop),
-                        end = Offset(needleX, needleBottom),
-                        strokeWidth = 2.5f
-                    )
-
-                    // Círculo inferior de la aguja
-                    drawCircle(
-                        color = Color.Black,
-                        radius = 4f,
-                        center = Offset(needleX, needleBottom)
-                    )
-                }
-
-                // Números de Frecuencia (86, 87, 88, 89, 90)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter)
-                        .padding(horizontal = 24.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "86", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
-                    Text(text = "87", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
-                    Text(text = "88", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
-                    Text(text = "89", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
-                    Text(text = "90", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            // --- TEXTO DE FRECUENCIA DIGITAL ---
-            Row(
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "87.3",
-                    fontSize = 64.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.Black
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = "MHz",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // --- MENSAJE DE ERROR O CARGA ---
-            if (errorMessage != null) {
-                Text(
-                    text = errorMessage!!,
-                    color = Color.Red,
-                    fontSize = 13.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-                )
-            }
-
-            // --- PERILLA CONCÉNTRICA / BOTÓN PLAY-PAUSE ---
-            Box(
-                modifier = Modifier
-                    .size(170.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFAFAFAF)) // Anillo exterior gris
-                    .clickable {
-                        errorMessage = null
-                        if (!isNetworkAvailable(context)) {
-                            errorMessage = "Sin conexión a internet."
-                            exoPlayer.pause()
-                            return@clickable
-                        }
-
-                        if (isPlaying) {
-                            exoPlayer.pause()
-                        } else {
-                            exoPlayer.play()
-                        }
+    ) {
+        Scaffold(
+            topBar = {
+                AppTopBar(
+                    onMenuClick = {
+                        scope.launch { drawerState.open() }
                     },
-                contentAlignment = Alignment.Center
-            ) {
-                // Círculo interior negro
+                    onProfileClick = {
+                        /* Acción al tocar el perfil */
+                    }
+                )
+            },
+            bottomBar = {
                 Box(
                     modifier = Modifier
-                        .size(115.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black),
+                        .fillMaxWidth()
+                        .background(headerFooterBg)
+                        .navigationBarsPadding()
+                        .padding(vertical = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(36.dp),
-                            color = Color.White,
-                            strokeWidth = 3.dp
-                        )
-                    } else {
+                    IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            contentDescription = if (isPlaying) "Pausar" else "Reproducir",
-                            modifier = Modifier.size(54.dp),
-                            tint = Color.White
+                            imageVector = Icons.Default.Home,
+                            contentDescription = "Inicio",
+                            tint = darkGreenText,
+                            modifier = Modifier.size(36.dp)
                         )
                     }
                 }
             }
-        }
-    }
-}
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .background(dialBackground),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // --- DIAL DE RADIO EN CANVAS ---
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                        .padding(top = 10.dp)
+                ) {
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        val width = size.width
+                        val lineCount = 45
+                        val spacing = width / (lineCount + 1)
+                        val lineTop = 60f
+                        val lineBottom = 170f
 
-@OptIn(UnstableApi::class)
-@ExperimentalMaterial3Api
-@Preview(showBackground = true)
-@Composable
-fun RadioScreenPreview() {
-    UPAPPTheme {
-        RadioScreen()
+                        for (i in 1..lineCount) {
+                            val x = spacing * i
+                            drawLine(
+                                color = Color.Black,
+                                start = Offset(x, lineTop),
+                                end = Offset(x, lineBottom),
+                                strokeWidth = 3f
+                            )
+                        }
+
+                        val needleX = spacing * 13.5f
+                        val needleTop = 10f
+                        val needleBottom = 185f
+
+                        drawLine(
+                            color = Color.Black,
+                            start = Offset(needleX, needleTop),
+                            end = Offset(needleX, needleBottom),
+                            strokeWidth = 2.5f
+                        )
+
+                        drawCircle(
+                            color = Color.Black,
+                            radius = 4f,
+                            center = Offset(needleX, needleBottom)
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .padding(horizontal = 24.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = "86", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
+                        Text(text = "87", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
+                        Text(text = "88", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
+                        Text(text = "89", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
+                        Text(text = "90", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                // --- FRECUENCIA DIGITAL ---
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "87.3",
+                        fontSize = 64.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.Black
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "MHz",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+                // --- ERRORES ---
+                if (errorMessage != null) {
+                    Text(
+                        text = errorMessage!!,
+                        color = Color.Red,
+                        fontSize = 13.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+                    )
+                }
+
+                // --- PERILLA CONCÉNTRICA / BOTÓN DE REPRODUCCIÓN ---
+                Box(
+                    modifier = Modifier
+                        .size(170.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFAFAFAF))
+                        .clickable {
+                            errorMessage = null
+                            if (!isNetworkAvailable(context)) {
+                                errorMessage = "Sin conexión a internet."
+                                exoPlayer.pause()
+                                return@clickable
+                            }
+
+                            if (isPlaying) {
+                                exoPlayer.pause()
+                            } else {
+                                exoPlayer.play()
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(115.dp)
+                            .clip(CircleShape)
+                            .background(Color.Black),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(36.dp),
+                                color = Color.White,
+                                strokeWidth = 3.dp
+                            )
+                        } else {
+                            Icon(
+                                imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                contentDescription = if (isPlaying) "Pausar" else "Reproducir",
+                                modifier = Modifier.size(54.dp),
+                                tint = Color.White
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
