@@ -19,7 +19,7 @@ import com.example.upapp.screens.LoginScreen
 import com.example.upapp.screens.RadioScreen
 import com.example.upapp.screens.SupportScreen
 import com.example.upapp.ui.theme.DarkGray
-
+import com.example.upapp.screens.CalendarEventsScreen
 @Composable
 fun NavGraph(
     navController: NavHostController,
@@ -71,9 +71,12 @@ fun NavGraph(
 
         // 6. Calendario y Eventos (Integrante 2)
         composable(route = Screen.CalendarEvents.route) {
-            PlaceholderScreen(title = "Calendario y Eventos")
+            CalendarEventsScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
-
         // 7. Alertas Agroclimáticas (Integrante 4)
         composable(route = Screen.AgroAlerts.route) {
             PlaceholderScreen(title = "Alertas Agroclimáticas")
