@@ -2,35 +2,40 @@ package com.example.upapp.ui.components
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.upapp.ui.theme.DarkGreen
-import com.example.upapp.ui.theme.UPAPPTheme
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 
 /**
- * Componente reutilizable para mostrar un código QR.
+ * Componente reutilizable para mostrar códigos QR.
  *
- * @param qrContent Texto o identificador que se guardará dentro del QR.
- * @param modifier Permite modificar la posición o tamaño desde otra pantalla.
- * @param qrSize Tamaño visual del código QR.
- * @param foregroundColor Color de los cuadros del QR.
- * @param backgroundColor Color de fondo del QR.
+ * En Android Studio Preview puede mostrar un marcador ligero,
+ * evitando problemas de renderizado.
+ *
+ * En un emulador o dispositivo físico genera el QR verdadero.
  */
 @Composable
 fun QrCardView(
@@ -38,24 +43,19 @@ fun QrCardView(
     modifier: Modifier = Modifier,
     qrSize: Dp = 210.dp,
     foregroundColor: Color = DarkGreen,
-    backgroundColor: Color = Color.White
+    backgroundColor: Color = Color.White,
+    renderRealQrInPreview: Boolean = false
 ) {
+    val isPreview = LocalInspectionMode.current
+
     /*
-     * remember evita generar nuevamente el QR en cada actualización
-     * de la interfaz, siempre que los datos y colores no cambien.
+     * El QR real se genera cuando:
+     *
+     * 1. La aplicación se ejecuta en un emulador o teléfono.
+     * 2. Se solicita expresamente dentro de una Preview individual.
      */
-    val qrBitmap = remember(
-        qrContent,
-        foregroundColor,
-        backgroundColor
-    ) {
-        generateQrBitmap(
-            content = qrContent,
-            size = 700,
-            foregroundColor = foregroundColor.toArgb(),
-            backgroundColor = backgroundColor.toArgb()
-        )
-    }
+    val shouldGenerateRealQr =
+        !isPreview || renderRealQrInPreview
 
     Surface(
         modifier = modifier,
@@ -63,30 +63,60 @@ fun QrCardView(
         color = backgroundColor,
         shadowElevation = 2.dp
     ) {
-        Image(
-            bitmap = qrBitmap.asImageBitmap(),
-            contentDescription = "Código QR de validación",
-            modifier = Modifier
-                .padding(12.dp)
-                .size(qrSize),
+        if (shouldGenerateRealQr) {
+            val qrBitmap = remember(
+                qrContent,
+                foregroundColor,
+                backgroundColor
+            ) {
+                generateQrBitmap(
+                    content = qrContent,
+                    foregroundColor = foregroundColor.toArgb(),
+                    backgroundColor = backgroundColor.toArgb()
+                )
+            }
+
+            Image(
+                bitmap = qrBitmap.asImageBitmap(),
+                contentDescription = "Código QR de validación",
+                modifier = Modifier
+                    .padding(12.dp)
+                    .size(qrSize),
+                filterQuality = FilterQuality.None
+            )
+        } else {
             /*
-             * FilterQuality.None mantiene los cuadros del QR definidos
-             * y evita que Android los difumine.
+             * Marcador que se muestra solamente dentro
+             * de la Preview de Android Studio.
              */
-            filterQuality = FilterQuality.None
-        )
+            Box(
+                modifier = Modifier
+                    .padding(12.dp)
+                    .size(qrSize)
+                    .background(backgroundColor),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "QR",
+                    color = foregroundColor,
+                    fontSize = 48.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
     }
 }
 
 /**
- * Convierte un texto en un Bitmap que contiene un código QR.
+ * Genera el Bitmap del código QR real.
  */
 private fun generateQrBitmap(
     content: String,
-    size: Int,
     foregroundColor: Int,
     backgroundColor: Int
 ): Bitmap {
+    val size = 700
+
     require(content.isNotBlank()) {
         "El contenido del código QR no puede estar vacío."
     }
@@ -110,7 +140,11 @@ private fun generateQrBitmap(
     for (y in 0 until size) {
         for (x in 0 until size) {
             pixels[y * size + x] =
-                if (bitMatrix[x, y]) foregroundColor else backgroundColor
+                if (bitMatrix[x, y]) {
+                    foregroundColor
+                } else {
+                    backgroundColor
+                }
         }
     }
 
@@ -122,13 +156,19 @@ private fun generateQrBitmap(
     )
 }
 
-@Preview(showBackground = true)
+/**
+ * Preview individual del QR verdadero.
+ */
+@Preview(
+    name = "Código QR",
+    showBackground = true
+)
 @Composable
 private fun QrCardViewPreview() {
-    UPAPPTheme {
-        QrCardView(
-            qrContent = "UPAPP-CREDENTIAL-25308065",
-            foregroundColor = DarkGreen
-        )
-    }
+    QrCardView(
+        qrContent = "UPAPP-CREDENTIAL-25308065",
+        foregroundColor = DarkGreen,
+        backgroundColor = Color.White,
+        renderRealQrInPreview = true
+    )
 }
