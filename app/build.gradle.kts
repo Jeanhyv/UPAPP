@@ -58,6 +58,6 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.3.1")
     implementation("androidx.media3:media3-ui:1.3.1")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+    implementation("com.google.zxing:core:3.5.4")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
