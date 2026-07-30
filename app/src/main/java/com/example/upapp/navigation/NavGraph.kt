@@ -20,6 +20,7 @@ import com.example.upapp.screens.RadioScreen
 import com.example.upapp.screens.SupportScreen
 import com.example.upapp.ui.theme.DarkGray
 import com.example.upapp.screens.CalendarEventsScreen
+import com.example.upapp.screens.MapScreen
 @Composable
 fun NavGraph(
     navController: NavHostController,
@@ -82,10 +83,17 @@ fun NavGraph(
             PlaceholderScreen(title = "Alertas Agroclimáticas")
         }
 
-        // 8. Mapa / Croquis (Integrante 4)
-        composable(route = Screen.Map.route) {
-            PlaceholderScreen(title = "Croquis del Campus")
-        }
+        // Pantalla del Croquis 2026
+                composable(route = Screen.Map.route) {
+                    MapScreen(
+                        onBackClick = {
+                            // Regresa a la pantalla anterior si hay historial, o va a Home
+                            if (!navController.popBackStack()) {
+                                navController.navigate(Screen.Home.route)
+                            }
+                        }
+                    )
+                }
 
         // 9. Documentos (Integrante 4)
         composable(route = Screen.Documents.route) {
