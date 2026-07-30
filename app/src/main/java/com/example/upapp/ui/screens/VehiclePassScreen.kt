@@ -2,26 +2,15 @@ package com.example.upapp.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,13 +23,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.upapp.R
+import com.example.upapp.components.AppTopBar
+import com.example.upapp.components.CustomAppDrawer
 import com.example.upapp.ui.components.QrCardView
+import kotlinx.coroutines.launch
 
 // Colores del tarjetón vehicular
 private val VehicleCardGreen = Color(0xFFA6C9B7)
 private val VehicleIconCream = Color(0xFFF1D18A)
 private val VehicleTextWhite = Color.White
 private val VehicleBackground = Color.White
+private val GreenBottomBarVehicle = Color(0xFFC4D6B0)
+private val DarkGreenHomeIcon = Color(0xFF047435)
 
 data class VehiclePassUiData(
     val ownerName: String,
@@ -66,27 +60,86 @@ private val sampleVehiclePass = VehiclePassUiData(
     qrContent = "UPAPP-VEHICLE-25308065-ABC123A"
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VehiclePassScreen(
     vehiclePass: VehiclePassUiData = sampleVehiclePass,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onNavigateToCalendar: () -> Unit = {}
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(VehicleBackground)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            VehiclePassCard(
-                vehiclePass = vehiclePass,
-                onBackClick = onBackClick
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            CustomAppDrawer(
+                onNavigateToCalendar = {
+                    scope.launch { drawerState.close() }
+                    onNavigateToCalendar()
+                },
+                onCloseDrawer = {
+                    scope.launch { drawerState.close() }
+                }
             )
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                AppTopBar(
+                    onMenuClick = {
+                        scope.launch { drawerState.open() }
+                    },
+                    onProfileClick = {
+                        /* Acción de perfil */
+                    }
+                )
+            },
+            bottomBar = {
+                BottomAppBar(
+                    containerColor = GreenBottomBarVehicle,
+                    contentPadding = PaddingValues(0.dp),
+                    modifier = Modifier.height(68.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(
+                            onClick = onBackClick,
+                            modifier = Modifier.size(56.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Home,
+                                contentDescription = "Regresar a Inicio",
+                                tint = DarkGreenHomeIcon,
+                                modifier = Modifier.size(52.dp)
+                            )
+                        }
+                    }
+                }
+            },
+            containerColor = VehicleBackground
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp, vertical = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    VehiclePassCard(
+                        vehiclePass = vehiclePass,
+                        onBackClick = onBackClick
+                    )
+                }
+            }
         }
     }
 }

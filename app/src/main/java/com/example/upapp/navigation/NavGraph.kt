@@ -10,16 +10,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+
 import com.example.upapp.screens.LoginScreen
 import com.example.upapp.screens.SupportScreen
 import com.example.upapp.ui.screens.AgroAlertsScreen
+import com.example.upapp.ui.screens.CalendarEventsScreen
 import com.example.upapp.ui.screens.DocumentsScreen
-import com.example.upapp.ui.theme.DarkGray
 import com.example.upapp.ui.screens.HomeScreen
 import com.example.upapp.ui.screens.MapScreen
 import com.example.upapp.ui.screens.RadioScreen
-import com.example.upapp.ui.screens.CalendarEventsScreen
-// Ajusta 'ui.screens' según la estructura real de carpetas de tu proyecto
+import com.example.upapp.ui.screens.VehiclePassScreen
+import com.example.upapp.ui.theme.DarkGray
+
 @Composable
 fun NavGraph(
     navController: NavHostController,
@@ -52,7 +54,7 @@ fun NavGraph(
             )
         }
 
-        // 3. Pantalla de Inicio / Dashboard (UpappScreen)
+        // 3. Pantalla de Inicio / Dashboard
         composable(route = Screen.Home.route) {
             HomeScreen(
                 onNavigateToMap = {
@@ -69,26 +71,33 @@ fun NavGraph(
                 },
                 onNavigateToAgroAlerts = {
                     navController.navigate(Screen.AgroAlerts.route)
+                },
+                onNavigateToVehiclePass = {
+                    navController.navigate(Screen.VehiclePass.route)
                 }
             )
         }
+
         // 4. Credencial Digital
         composable(route = Screen.ProfileCredential.route) {
             PlaceholderScreen(title = "Credencial Estudiantil Digital")
         }
 
-        // 5. Tarjetón Vehicular
+        // 5. Tarjetón Vehicular (AQUÍ YA DETECTA LA PANTALLA REAL)
         composable(route = Screen.VehiclePass.route) {
-            PlaceholderScreen(title = "Tarjetón Vehicular")
+            VehiclePassScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         // 6. Calendario y Eventos
-// 6. Calendario y Eventos
         composable(route = Screen.CalendarEvents.route) {
             CalendarEventsScreen(navController = navController)
         }
 
-        // 7. Alertas Agroclimáticas (PANTALLA REAL)
+        // 7. Alertas Agroclimáticas
         composable(route = Screen.AgroAlerts.route) {
             AgroAlertsScreen(navController = navController)
         }
@@ -98,7 +107,7 @@ fun NavGraph(
             MapScreen(navController = navController)
         }
 
-        // 9. Documentos (PANTALLA REAL)
+        // 9. Documentos
         composable(route = Screen.Documents.route) {
             DocumentsScreen(navController = navController)
         }

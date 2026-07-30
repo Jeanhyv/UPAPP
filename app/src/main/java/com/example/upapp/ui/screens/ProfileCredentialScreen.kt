@@ -139,7 +139,7 @@ private fun CredentialCard(
             ) {
                 Image(
                     painter = painterResource(
-                        id = R.drawable.exit_pink
+                        id = R.drawable.exit
                     ),
                     contentDescription = "Regresar",
                     modifier = Modifier.size(42.dp),
@@ -396,7 +396,7 @@ fun ProfileCredentialOverlay(
             ) {
                 Image(
                     painter = painterResource(
-                        id = R.drawable.exit_pink
+                        id = R.drawable.exit
                     ),
                     contentDescription = "Cerrar credencial",
                     modifier = Modifier.size(42.dp),

@@ -38,7 +38,8 @@ fun HomeScreen(
     onNavigateToMap: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
     onNavigateToDocuments: () -> Unit = {},
-    onNavigateToAgroAlerts: () -> Unit = {}
+    onNavigateToAgroAlerts: () -> Unit = {},
+    onNavigateToVehiclePass: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -103,7 +104,8 @@ fun HomeScreen(
                     onMapClick = onNavigateToMap,
                     onCalendarClick = onNavigateToCalendar,
                     onDocumentsClick = onNavigateToDocuments,
-                    onAgroAlertsClick = onNavigateToAgroAlerts
+                    onAgroAlertsClick = onNavigateToAgroAlerts,
+                    onVehicleClick = onNavigateToVehiclePass
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -165,7 +167,8 @@ fun GridMenuSection(
     onMapClick: () -> Unit,
     onCalendarClick: () -> Unit,
     onDocumentsClick: () -> Unit,
-    onAgroAlertsClick: () -> Unit
+    onAgroAlertsClick: () -> Unit,
+    onVehicleClick: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -186,7 +189,7 @@ fun GridMenuSection(
                 color = Color(0xFFF1A882),
                 iconResId = R.drawable.brum_brum,
                 description = "Vehículo",
-                onClick = { /* Acción para vehículo */ }
+                onClick = onVehicleClick
             )
             GridItem(
                 color = Color(0xFFE7C1C1),
