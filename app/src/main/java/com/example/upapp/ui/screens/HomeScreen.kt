@@ -244,7 +244,9 @@ fun GridItem(
         Image(
             painter = painterResource(id = iconResId),
             contentDescription = description,
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier
+                .size(80.dp)
+                .clip(RoundedCornerShape(16.dp))
         )
     }
 }
