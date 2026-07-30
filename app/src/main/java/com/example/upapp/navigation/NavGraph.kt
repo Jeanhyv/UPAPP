@@ -29,13 +29,11 @@ fun NavGraph(
         composable(route = Screen.Login.route) {
             LoginScreen(
                 onLoginSuccess = {
-                    // Al validar credenciales con éxito, va a Home y borra Login del historial
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
                 onForgotPasswordClick = {
-                    // Al pulsar "¿Olvidaste tu contraseña?", va a Soporte
                     navController.navigate(Screen.Support.route)
                 }
             )
@@ -45,14 +43,21 @@ fun NavGraph(
         composable(route = Screen.Support.route) {
             SupportScreen(
                 onBackToLoginClick = {
-                    navController.popBackStack() // Regresa a la pantalla de Login
+                    navController.popBackStack()
                 }
             )
         }
 
         // 3. Pantalla de Inicio / Dashboard (Integrante 2)
         composable(route = Screen.Home.route) {
-            UpappScreen()
+            UpappScreen(
+                onNavigateToMap = {
+                    navController.navigate(Screen.Map.route)
+                },
+                onNavigateToRadio = {
+                    navController.navigate(Screen.Radio.route)
+                }
+            )
         }
 
         // 4. Credencial Digital (Integrante 3)
@@ -96,7 +101,6 @@ fun NavGraph(
     }
 }
 
-// Componente temporal para probar la navegación a pantallas que aún no están creadas
 @Composable
 private fun PlaceholderScreen(title: String) {
     Box(

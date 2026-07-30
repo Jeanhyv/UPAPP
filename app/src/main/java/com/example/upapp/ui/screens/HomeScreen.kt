@@ -2,6 +2,7 @@ package com.example.upapp.ui.screens // Asegúrate de que este paquete coincida 
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import com.example.upapp.R
 // Colores extraídos de la imagen original
 val GreenBarColor = Color(0xFFC7D6BA)
 val DarkGreenIcon = Color(0xFF1B5E20)
@@ -30,22 +32,22 @@ val BackgroundWhite = Color(0xFFFFFFFF)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UpappScreen() {
+fun UpappScreen(
+    // 🟢 AGREGAMOS LOS PARÁMETROS DE NAVEGACIÓN AQUÍ
+    onNavigateToRadio: () -> Unit = {},
+    onNavigateToMap: () -> Unit = {}
+) {
     Scaffold(
         topBar = {
-            // Usamos CenterAlignedTopAppBar para que el título (Logo) quede exactamente en medio
             CenterAlignedTopAppBar(
                 title = {
-                    // 🟢 AQUÍ VA EL LOGO PRINCIPAL (UPAPP) EN EL CENTRO
-                    // Reemplaza el Box con: Image(painter = painterResource(id = R.drawable.tu_logo_upapp), ...)
-                    Box(
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_upapp),
+                        contentDescription = "Logo de UPAPP",
                         modifier = Modifier
                             .width(100.dp)
                             .height(40.dp)
-                            .background(Color.LightGray) // Borrar background al poner la imagen
-                    ) {
-                        Text("LOGO UPAPP", fontSize = 12.sp, modifier = Modifier.align(Alignment.Center))
-                    }
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = { /* Acción del menú de hamburguesa */ }) {
@@ -58,20 +60,18 @@ fun UpappScreen() {
                     }
                 },
                 actions = {
-                    // 🟢 AQUÍ VA LA FOTO DE PERFIL A LA DERECHA (Avatar de la chica)
-                    // Reemplaza el Box con: Image(painter = painterResource(id = R.drawable.tu_foto_perfil), ...)
                     IconButton(
                         onClick = { /* Acción al tocar el perfil */ },
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
-                        Box(
+                        Image(
+                            painter = painterResource(id = R.drawable.perfil_avatar),
+                            contentDescription = "Perfil",
                             modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFFF3D28E)) // Fondo temporal del avatar
-                        ) {
-                            Text("FOTO", fontSize = 10.sp, modifier = Modifier.align(Alignment.Center))
-                        }
+                                .size(40.dp) // 🟢 Ajustado a 40dp para que quepa en la barra
+                                .clip(CircleShape), // 🟢 Hace que la foto sea redonda
+                            contentScale = ContentScale.Crop // 🟢 Evita que la foto se estire
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -111,14 +111,19 @@ fun UpappScreen() {
             Spacer(modifier = Modifier.height(16.dp))
             BannerSection()
             Spacer(modifier = Modifier.height(24.dp))
-            GridMenuSection()
+
+            // 🟢 CONECTAMOS LAS ACCIONES A LA CUADRÍCULA
+            GridMenuSection(
+                onRadioClick = onNavigateToRadio,
+                onMapClick = onNavigateToMap
+            )
+
             Spacer(modifier = Modifier.height(32.dp))
             ActionButtonsSection()
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
-
 @Composable
 fun BannerSection() {
     // Usamos LazyRow para simular el carrusel donde se asoman las imágenes de los lados
@@ -158,7 +163,10 @@ fun BannerSection() {
 }
 
 @Composable
-fun GridMenuSection() {
+fun GridMenuSection(
+    onRadioClick: () -> Unit, // 🟢 NUEVO: Recibe la acción para el radio
+    onMapClick: () -> Unit    // 🟢 NUEVO: Recibe la acción para el mapa
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = Modifier.padding(horizontal = 32.dp)
@@ -168,12 +176,24 @@ fun GridMenuSection() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // 🟢 AQUÍ VA EL LOGO DEL TRIÁNGULO DE ADVERTENCIA
-            GridItem(color = Color(0xFFD67D7D)) // Rojo/Rosa
-            // 🟢 AQUÍ VA EL LOGO DEL COCHE
-            GridItem(color = Color(0xFFF1A882)) // Naranja
-            // 🟢 AQUÍ VA EL LOGO DEL CALENDARIO
-            GridItem(color = Color(0xFFE7C1C1)) // Rosa claro
+            GridItem(
+                color = Color(0xFFD67D7D),
+                iconResId = R.drawable.warning,
+                description = "Alertas",
+                onClick = { /* Acción futura para alertas */ }
+            )
+            GridItem(
+                color = Color(0xFFF1A882),
+                iconResId = R.drawable.brum_brum,
+                description = "Vehículo",
+                onClick = { /* Acción futura para vehículo */ }
+            )
+            GridItem(
+                color = Color(0xFFE7C1C1),
+                iconResId = R.drawable.calendar,
+                description = "Calendario",
+                onClick = { /* Acción futura para calendario */ }
+            )
         }
 
         // Fila 2
@@ -181,16 +201,52 @@ fun GridMenuSection() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // 🟢 AQUÍ VA EL LOGO DEL MAPA/UBICACIÓN
-            GridItem(color = Color(0xFFF1D18A)) // Amarillo
-            // 🟢 AQUÍ VA EL LOGO DE LOS DOCUMENTOS
-            GridItem(color = Color(0xFFA6C9B7)) // Verde agua
-            // 🟢 AQUÍ VA EL LOGO DEL MICRÓFONO
-            GridItem(color = Color(0xFFB9CEDB)) // Azul claro
+            GridItem(
+                color = Color(0xFFF1D18A),
+                iconResId = R.drawable.school_map,
+                description = "Croquis",
+                onClick = onMapClick // 🟢 AQUÍ EJECUTA LA ACCIÓN DEL MAPA
+            )
+            GridItem(
+                color = Color(0xFFA6C9B7),
+                iconResId = R.drawable.documents,
+                description = "Documentos",
+                onClick = { /* Acción futura para documentos */ }
+            )
+            GridItem(
+                color = Color(0xFFB9CEDB),
+                iconResId = R.drawable.radio,
+                description = "Radio",
+                onClick = onRadioClick // 🟢 AQUÍ EJECUTA LA ACCIÓN DEL RADIO
+            )
         }
     }
 }
 
+// 🟢 ESTA ES LA PLANTILLA ACTUALIZADA (Reemplaza la que tienes más abajo)
+@Composable
+fun GridItem(
+    color: Color,
+    iconResId: Int,
+    description: String,
+    onClick: () -> Unit // 🟢 NUEVO: Parámetro para recibir la acción de click
+) {
+    Box(
+        modifier = Modifier
+            .size(80.dp) // Tamaño del cuadro de color de fondo
+            .clip(RoundedCornerShape(16.dp))
+            .background(color)
+            .clickable { onClick() }, // 🟢 NUEVO: Hace que el cuadro sea un botón tocable
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = iconResId),
+            contentDescription = description,
+            // 🟢 AJUSTE DE TAMAÑO: Cambia este 48.dp por un número mayor (ej. 56.dp o 64.dp) si quieres el icono más grande
+            modifier = Modifier.size(48.dp)
+        )
+    }
+}
 @Composable
 fun GridItem(color: Color) {
     // Reemplazar el interior del Box con un Image(...) o Icon(...) de tus recursos
