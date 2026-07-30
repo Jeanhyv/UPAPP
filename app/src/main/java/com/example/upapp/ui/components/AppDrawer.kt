@@ -22,8 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
+
 // Colores del Drawer
 val DrawerBgColor = Color(0xFFC7D6BA)     // Verde claro de fondo
 val DrawerDarkGreen = Color(0xFF103A4B)   // Título "Mi cuenta" y texto de opciones
@@ -31,8 +30,9 @@ val DrawerIconGreen = Color(0xFF5A8E40)   // Verde de los iconos
 val DotMagenta = Color(0xFFD81B60)
 
 @Composable
-fun CustomAppDrawer(
+fun AppDrawer(
     onNavigateToCalendar: () -> Unit = {},
+    onNavigateToHelpComments: () -> Unit = {},
     onCloseDrawer: () -> Unit = {}
 ) {
     var searchText by remember { mutableStateOf("") }
@@ -89,11 +89,11 @@ fun CustomAppDrawer(
             DrawerMenuItem(
                 icon = Icons.Default.Notifications,
                 text = "Notificaciones",
-                iconTint = Color(0xFFD81B60), // Notificación roja/magenta
+                iconTint = Color(0xFFD81B60),
                 onClick = { /* Próximamente */ }
             )
 
-            // 🟢 CALENDARIO (ESTE SÍ NAVEGA)
+            // CALENDARIO
             DrawerMenuItem(
                 icon = Icons.Default.DateRange,
                 text = "Calendario",
@@ -111,11 +111,15 @@ fun CustomAppDrawer(
                 onClick = { /* Próximamente */ }
             )
 
+            // AYUDA Y COMENTARIOS
             DrawerMenuItem(
                 icon = Icons.Default.HelpOutline,
-                text = "Ayuda y comentarios",
+                text = "Ayuda y Comentarios",
                 iconTint = DrawerIconGreen,
-                onClick = { /* Próximamente */ }
+                onClick = {
+                    onCloseDrawer()
+                    onNavigateToHelpComments()
+                }
             )
 
             Spacer(modifier = Modifier.height(30.dp))

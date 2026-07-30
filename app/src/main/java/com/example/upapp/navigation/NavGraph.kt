@@ -10,12 +10,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-
 import com.example.upapp.screens.LoginScreen
 import com.example.upapp.screens.SupportScreen
 import com.example.upapp.ui.screens.AgroAlertsScreen
 import com.example.upapp.ui.screens.CalendarEventsScreen
 import com.example.upapp.ui.screens.DocumentsScreen
+import com.example.upapp.ui.screens.HelpCommentsScreen
 import com.example.upapp.ui.screens.HomeScreen
 import com.example.upapp.ui.screens.MapScreen
 import com.example.upapp.ui.screens.RadioScreen
@@ -83,7 +83,7 @@ fun NavGraph(
             PlaceholderScreen(title = "Credencial Estudiantil Digital")
         }
 
-        // 5. Tarjetón Vehicular (AQUÍ YA DETECTA LA PANTALLA REAL)
+        // 5. Tarjetón Vehicular
         composable(route = Screen.VehiclePass.route) {
             VehiclePassScreen(
                 onBackClick = {
@@ -119,6 +119,11 @@ fun NavGraph(
                     navController.popBackStack()
                 }
             )
+        }
+
+        // 11. Ayuda y Comentarios (INCLUIDO DENTRO DEL NAVHOST)
+        composable(route = Screen.HelpComments.route) {
+            HelpCommentsScreen(navController = navController)
         }
     }
 }
