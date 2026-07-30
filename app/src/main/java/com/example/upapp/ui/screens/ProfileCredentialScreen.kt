@@ -2,11 +2,11 @@ package com.example.upapp.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,19 +15,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -38,16 +37,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.upapp.R
 import com.example.upapp.ui.components.QrCardView
-import com.example.upapp.ui.theme.CreamYellow
-import com.example.upapp.ui.theme.DarkGray
-import com.example.upapp.ui.theme.DarkGreen
 import com.example.upapp.ui.theme.RosePink
 import com.example.upapp.ui.theme.UPAPPTheme
 
 /**
- * Datos necesarios para mostrar la credencial.
+ * Información que se muestra en la credencial.
  *
- * Después pueden obtenerse desde una API o base de datos.
+ * Posteriormente estos datos podrán obtenerse desde
+ * una API, Firebase o una base de datos.
  */
 data class CredentialUiData(
     val fullName: String,
@@ -62,7 +59,7 @@ data class CredentialUiData(
 )
 
 /**
- * Datos de prueba tomados del prototipo.
+ * Datos temporales tomados del prototipo.
  */
 private val sampleCredential = CredentialUiData(
     fullName = "Eloise Villa Fernández",
@@ -76,6 +73,12 @@ private val sampleCredential = CredentialUiData(
     qrContent = "UPAPP-CREDENTIAL-25308065"
 )
 
+/**
+ * Pantalla completa de la credencial.
+ *
+ * Esta versión puede seguir utilizándose como una pantalla
+ * independiente desde NavGraph.
+ */
 @Composable
 fun ProfileCredentialScreen(
     credential: CredentialUiData = sampleCredential,
@@ -104,6 +107,9 @@ fun ProfileCredentialScreen(
     }
 }
 
+/**
+ * Tarjeta rosa utilizada en la versión de pantalla completa.
+ */
 @Composable
 private fun CredentialCard(
     credential: CredentialUiData,
@@ -124,17 +130,11 @@ private fun CredentialCard(
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
-            /*
-             * Botón de salida.
-             *
-             * La imagen debe existir en:
-             * app/src/main/res/drawable/exit_pink.png
-             */
             IconButton(
                 onClick = onBackClick,
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .padding(10.dp)
+                    .padding(8.dp)
                     .size(48.dp)
             ) {
                 Image(
@@ -153,88 +153,36 @@ private fun CredentialCard(
                     .padding(
                         start = 22.dp,
                         end = 22.dp,
-                        top = 30.dp,
+                        top = 22.dp,
                         bottom = 26.dp
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                ProfilePlaceholder()
+                ProfileAvatar()
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = credential.fullName,
-                    color = Color.White,
-                    fontSize = 21.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(3.dp))
-
-                Text(
-                    text = credential.studentNumber,
-                    color = Color.White,
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center
+                StudentHeader(
+                    credential = credential
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                CredentialDetail(
-                    label = "Grupo",
-                    value = credential.group
-                )
-
-                CredentialDetail(
-                    label = "RFC",
-                    value = credential.rfc
-                )
-
-                CredentialDetail(
-                    label = "CURP",
-                    value = credential.curp
-                )
-
-                CredentialDetail(
-                    label = "NSS",
-                    value = credential.nss
+                CredentialDetails(
+                    credential = credential
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))
 
-                /*
-                 * En Android Studio Preview aparecerá el texto QR.
-                 *
-                 * En el emulador o teléfono aparecerá
-                 * el código QR verdadero.
-                 */
-                QrCardView(
-                    qrContent = credential.qrContent,
-                    qrSize = 170.dp,
-                    foregroundColor = Color.White,
-                    backgroundColor = RosePink
+                CredentialQr(
+                    credential = credential,
+                    qrSize = 170
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))
 
-                Text(
-                    text = "Vigencia",
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(2.dp))
-
-                Text(
-                    text = "${credential.validFrom} - ${credential.validUntil}",
-                    color = Color.White,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Center
+                CredentialValidity(
+                    credential = credential
                 )
             }
         }
@@ -242,41 +190,85 @@ private fun CredentialCard(
 }
 
 /**
- * Fotografía provisional.
- *
- * Posteriormente puede reemplazarse por la imagen
- * real de la estudiante.
+ * Avatar circular del estudiante.
  */
 @Composable
-private fun ProfilePlaceholder() {
-    val ovalShape = RoundedCornerShape(percent = 50)
-
+private fun ProfileAvatar() {
     Box(
         modifier = Modifier
-            .size(
-                width = 175.dp,
-                height = 125.dp
-            )
-            .clip(ovalShape)
-            .background(CreamYellow)
-            .border(
-                width = 4.dp,
-                color = DarkGreen,
-                shape = ovalShape
-            ),
+            .size(180.dp)
+            .clip(CircleShape),
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            imageVector = Icons.Default.Person,
-            contentDescription = "Fotografía del estudiante",
-            modifier = Modifier.size(78.dp),
-            tint = DarkGray
+        Image(
+            painter = painterResource(
+                id = R.drawable.perfil_avatar
+            ),
+            contentDescription = "Fotografía de Eloise Villa Fernández",
+            modifier = Modifier
+                .fillMaxSize()
+                .scale(1.12f),
+            contentScale = ContentScale.Crop
         )
     }
 }
 
 /**
- * Fila para mostrar cada dato de la credencial.
+ * Nombre y matrícula del estudiante.
+ */
+@Composable
+private fun StudentHeader(
+    credential: CredentialUiData
+) {
+    Text(
+        text = credential.fullName,
+        color = Color.White,
+        fontSize = 21.sp,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center
+    )
+
+    Spacer(modifier = Modifier.height(3.dp))
+
+    Text(
+        text = credential.studentNumber,
+        color = Color.White,
+        fontSize = 19.sp,
+        fontWeight = FontWeight.SemiBold,
+        textAlign = TextAlign.Center
+    )
+}
+
+/**
+ * Agrupa los datos personales de la credencial.
+ */
+@Composable
+private fun CredentialDetails(
+    credential: CredentialUiData
+) {
+    CredentialDetail(
+        label = "Grupo",
+        value = credential.group
+    )
+
+    CredentialDetail(
+        label = "RFC",
+        value = credential.rfc
+    )
+
+    CredentialDetail(
+        label = "CURP",
+        value = credential.curp
+    )
+
+    CredentialDetail(
+        label = "NSS",
+        value = credential.nss
+    )
+}
+
+/**
+ * Fila individual de información.
  */
 @Composable
 private fun CredentialDetail(
@@ -307,6 +299,160 @@ private fun CredentialDetail(
     }
 }
 
+/**
+ * Código QR de validación.
+ */
+@Composable
+private fun CredentialQr(
+    credential: CredentialUiData,
+    qrSize: Int
+) {
+    QrCardView(
+        qrContent = credential.qrContent,
+        qrSize = qrSize.dp,
+        foregroundColor = Color.White,
+        backgroundColor = RosePink,
+
+        /*
+         * Déjalo en false para evitar que Android Studio
+         * vuelva a mostrar una Preview en blanco.
+         *
+         * En el emulador y el teléfono se genera el QR real.
+         */
+        renderRealQrInPreview = false
+    )
+}
+
+/**
+ * Período de vigencia.
+ */
+@Composable
+private fun CredentialValidity(
+    credential: CredentialUiData
+) {
+    Text(
+        text = "Vigencia",
+        color = Color.White,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center
+    )
+
+    Spacer(modifier = Modifier.height(2.dp))
+
+    Text(
+        text = "${credential.validFrom} - ${credential.validUntil}",
+        color = Color.White,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Medium,
+        textAlign = TextAlign.Center
+    )
+}
+
+/**
+ * Credencial superpuesta sobre HomeScreen.
+ *
+ * Ocupa el 76 % del ancho y queda alineada a la derecha,
+ * dejando parcialmente visible la pantalla principal.
+ */
+@Composable
+fun ProfileCredentialOverlay(
+    credential: CredentialUiData = sampleCredential,
+    onCloseClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        /*
+         * Capa ligeramente oscura sobre HomeScreen.
+         */
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Color.Black.copy(alpha = 0.08f)
+                )
+        )
+
+        /*
+         * Panel rosa alineado a la derecha.
+         */
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .fillMaxHeight()
+                .fillMaxWidth(0.76f)
+                .background(RosePink)
+        ) {
+            /*
+             * Botón de cierre colocado sobre el contenido.
+             */
+            IconButton(
+                onClick = onCloseClick,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(8.dp)
+                    .size(48.dp)
+            ) {
+                Image(
+                    painter = painterResource(
+                        id = R.drawable.exit_pink
+                    ),
+                    contentDescription = "Cerrar credencial",
+                    modifier = Modifier.size(42.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        start = 18.dp,
+                        end = 18.dp,
+                        top = 20.dp,
+                        bottom = 24.dp
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ProfileAvatar()
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                StudentHeader(
+                    credential = credential
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                CredentialDetails(
+                    credential = credential
+                )
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                CredentialQr(
+                    credential = credential,
+                    qrSize = 165
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                CredentialValidity(
+                    credential = credential
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Preview de la versión completa.
+ *
+ * En Preview se mostrará el marcador "QR".
+ * En la aplicación se genera el código verdadero.
+ */
 @Preview(
     name = "Credencial completa",
     showBackground = true,

@@ -169,6 +169,6 @@ private fun QrCardViewPreview() {
         qrContent = "UPAPP-CREDENTIAL-25308065",
         foregroundColor = DarkGreen,
         backgroundColor = Color.White,
-        renderRealQrInPreview = true
+        renderRealQrInPreview = false
     )
 }
