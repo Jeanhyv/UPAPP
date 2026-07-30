@@ -11,4 +11,6 @@ sealed class Screen(val route: String) {
     object Map : Screen("map_screen")
     object Documents : Screen("documents_screen")
     object Radio : Screen("radio_screen")
+    object HelpComments : Screen("help_comments")
+
 }
