@@ -1,4 +1,4 @@
-package com.example.upapp.ui.screens // Asegúrate de que este paquete coincida con el tuyo
+package com.example.upapp.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -6,127 +6,118 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import com.example.upapp.R
-// Colores extraídos de la imagen original
+import com.example.upapp.components.AppTopBar
+import com.example.upapp.components.CustomAppDrawer
+import kotlinx.coroutines.launch
+
+// Colores institucionales
 val GreenBarColor = Color(0xFFC7D6BA)
 val DarkGreenIcon = Color(0xFF1B5E20)
 val BackgroundWhite = Color(0xFFFFFFFF)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UpappScreen(
-    // 🟢 AGREGAMOS LOS PARÁMETROS DE NAVEGACIÓN AQUÍ
+fun HomeScreen(
     onNavigateToRadio: () -> Unit = {},
-    onNavigateToMap: () -> Unit = {}
+    onNavigateToMap: () -> Unit = {},
+    onNavigateToCalendar: () -> Unit = {},
+    onNavigateToDocuments: () -> Unit = {},
+    onNavigateToAgroAlerts: () -> Unit = {}
 ) {
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_upapp),
-                        contentDescription = "Logo de UPAPP",
-                        modifier = Modifier
-                            .width(100.dp)
-                            .height(40.dp)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /* Acción del menú de hamburguesa */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = "Menú",
-                            tint = DarkGreenIcon,
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = { /* Acción al tocar el perfil */ },
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.perfil_avatar),
-                            contentDescription = "Perfil",
-                            modifier = Modifier
-                                .size(40.dp) // 🟢 Ajustado a 40dp para que quepa en la barra
-                                .clip(CircleShape), // 🟢 Hace que la foto sea redonda
-                            contentScale = ContentScale.Crop // 🟢 Evita que la foto se estire
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = GreenBarColor
-                )
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            CustomAppDrawer(
+                onNavigateToCalendar = onNavigateToCalendar,
+                onCloseDrawer = {
+                    scope.launch { drawerState.close() }
+                }
             )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = GreenBarColor,
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                AppTopBar(
+                    onMenuClick = {
+                        scope.launch { drawerState.open() }
+                    },
+                    onProfileClick = {
+                        /* Acción de perfil */
+                    }
+                )
+            },
+            bottomBar = {
+                BottomAppBar(
+                    containerColor = GreenBarColor,
+                    contentPadding = PaddingValues(0.dp)
                 ) {
-                    IconButton(onClick = { /* Acción de inicio */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = "Inicio",
-                            tint = DarkGreenIcon,
-                            modifier = Modifier.size(36.dp)
-                        )
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(onClick = { /* Acción inicio */ }) {
+                            Icon(
+                                imageVector = Icons.Default.Home,
+                                contentDescription = "Inicio",
+                                tint = DarkGreenIcon,
+                                modifier = Modifier.size(36.dp)
+                            )
+                        }
                     }
                 }
             }
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(BackgroundWhite)
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
-            BannerSection()
-            Spacer(modifier = Modifier.height(24.dp))
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(BackgroundWhite)
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+                BannerSection()
+                Spacer(modifier = Modifier.height(24.dp))
 
-            // 🟢 CONECTAMOS LAS ACCIONES A LA CUADRÍCULA
-            GridMenuSection(
-                onRadioClick = onNavigateToRadio,
-                onMapClick = onNavigateToMap
-            )
+                GridMenuSection(
+                    onRadioClick = onNavigateToRadio,
+                    onMapClick = onNavigateToMap,
+                    onCalendarClick = onNavigateToCalendar,
+                    onDocumentsClick = onNavigateToDocuments,
+                    onAgroAlertsClick = onNavigateToAgroAlerts
+                )
 
-            Spacer(modifier = Modifier.height(32.dp))
-            ActionButtonsSection()
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
+                ActionButtonsSection(
+                    onCalendarClick = onNavigateToCalendar
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
         }
     }
 }
+
 @Composable
 fun BannerSection() {
-    // Usamos LazyRow para simular el carrusel donde se asoman las imágenes de los lados
     LazyRow(
         contentPadding = PaddingValues(horizontal = 24.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -134,38 +125,47 @@ fun BannerSection() {
             .fillMaxWidth()
             .height(200.dp)
     ) {
-        // Elemento 1 (Imagen izquierda cortada)
         item {
-            // 🟢 AQUÍ VA LA IMAGEN DEL CARRUSEL (Izquierda)
-            Box(modifier = Modifier.width(40.dp).fillMaxHeight().background(Color.Gray))
+            Box(
+                modifier = Modifier
+                    .width(40.dp)
+                    .fillMaxHeight()
+                    .background(Color.Gray)
+            )
         }
 
-        // Elemento 2 (Banner central principal)
         item {
-            // 🟢 AQUÍ VA EL BANNER CENTRAL (Alerta de riesgos agro climatológicos)
-            // Reemplaza el Box por: Image(painter = painterResource(id = R.drawable.banner_alerta), contentScale = ContentScale.Crop, ...)
             Box(
                 modifier = Modifier
                     .width(300.dp)
                     .fillMaxHeight()
                     .background(Color(0xFFF6F0E6))
             ) {
-                Text("BANNER CENTRAL", modifier = Modifier.align(Alignment.Center))
+                Text(
+                    text = "BANNER CENTRAL",
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
 
-        // Elemento 3 (Imagen derecha cortada)
         item {
-            // 🟢 AQUÍ VA LA IMAGEN DEL CARRUSEL (Derecha)
-            Box(modifier = Modifier.width(40.dp).fillMaxHeight().background(Color.Gray))
+            Box(
+                modifier = Modifier
+                    .width(40.dp)
+                    .fillMaxHeight()
+                    .background(Color.Gray)
+            )
         }
     }
 }
 
 @Composable
 fun GridMenuSection(
-    onRadioClick: () -> Unit, // 🟢 NUEVO: Recibe la acción para el radio
-    onMapClick: () -> Unit    // 🟢 NUEVO: Recibe la acción para el mapa
+    onRadioClick: () -> Unit,
+    onMapClick: () -> Unit,
+    onCalendarClick: () -> Unit,
+    onDocumentsClick: () -> Unit,
+    onAgroAlertsClick: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -180,19 +180,19 @@ fun GridMenuSection(
                 color = Color(0xFFD67D7D),
                 iconResId = R.drawable.warning,
                 description = "Alertas",
-                onClick = { /* Acción futura para alertas */ }
+                onClick = onAgroAlertsClick
             )
             GridItem(
                 color = Color(0xFFF1A882),
                 iconResId = R.drawable.brum_brum,
                 description = "Vehículo",
-                onClick = { /* Acción futura para vehículo */ }
+                onClick = { /* Acción para vehículo */ }
             )
             GridItem(
                 color = Color(0xFFE7C1C1),
                 iconResId = R.drawable.calendar,
                 description = "Calendario",
-                onClick = { /* Acción futura para calendario */ }
+                onClick = onCalendarClick
             )
         }
 
@@ -205,64 +205,51 @@ fun GridMenuSection(
                 color = Color(0xFFF1D18A),
                 iconResId = R.drawable.school_map,
                 description = "Croquis",
-                onClick = onMapClick // 🟢 AQUÍ EJECUTA LA ACCIÓN DEL MAPA
+                onClick = onMapClick
             )
             GridItem(
                 color = Color(0xFFA6C9B7),
                 iconResId = R.drawable.documents,
                 description = "Documentos",
-                onClick = { /* Acción futura para documentos */ }
+                onClick = onDocumentsClick
             )
             GridItem(
                 color = Color(0xFFB9CEDB),
                 iconResId = R.drawable.radio,
                 description = "Radio",
-                onClick = onRadioClick // 🟢 AQUÍ EJECUTA LA ACCIÓN DEL RADIO
+                onClick = onRadioClick
             )
         }
     }
 }
 
-// 🟢 ESTA ES LA PLANTILLA ACTUALIZADA (Reemplaza la que tienes más abajo)
 @Composable
 fun GridItem(
     color: Color,
     iconResId: Int,
     description: String,
-    onClick: () -> Unit // 🟢 NUEVO: Parámetro para recibir la acción de click
+    onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
-            .size(80.dp) // Tamaño del cuadro de color de fondo
+            .size(80.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(color)
-            .clickable { onClick() }, // 🟢 NUEVO: Hace que el cuadro sea un botón tocable
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Image(
             painter = painterResource(id = iconResId),
             contentDescription = description,
-            // 🟢 AJUSTE DE TAMAÑO: Cambia este 48.dp por un número mayor (ej. 56.dp o 64.dp) si quieres el icono más grande
             modifier = Modifier.size(48.dp)
         )
     }
 }
-@Composable
-fun GridItem(color: Color) {
-    // Reemplazar el interior del Box con un Image(...) o Icon(...) de tus recursos
-    Box(
-        modifier = Modifier
-            .size(80.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(color),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Icon", color = Color.White, fontSize = 12.sp)
-    }
-}
 
 @Composable
-fun ActionButtonsSection() {
+fun ActionButtonsSection(
+    onCalendarClick: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -279,14 +266,14 @@ fun ActionButtonsSection() {
         ) {
             Text(
                 text = "Ver más",
-                color = Color(0xFF2C4A3B), // Color de texto oscuro
+                color = Color(0xFF2C4A3B),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium
             )
         }
 
         Button(
-            onClick = { /* Acción Eventos */ },
+            onClick = onCalendarClick,
             modifier = Modifier
                 .weight(1f)
                 .height(56.dp),
@@ -295,7 +282,7 @@ fun ActionButtonsSection() {
         ) {
             Text(
                 text = "Eventos",
-                color = Color(0xFF2C4A3B), // Color de texto oscuro
+                color = Color(0xFF2C4A3B),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium
             )

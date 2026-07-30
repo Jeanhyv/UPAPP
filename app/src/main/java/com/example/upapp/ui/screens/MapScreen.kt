@@ -1,4 +1,4 @@
-package com.example.upapp.screens
+package com.example.upapp.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,182 +29,143 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavController
 import com.example.upapp.R
+import com.example.upapp.components.AppTopBar
+import com.example.upapp.components.CustomAppDrawer
+import com.example.upapp.navigation.Screen
+import kotlinx.coroutines.launch
+
+val GreenBottomBarMap = Color(0xFFC4D6B0)
+val CrimsonRed = Color(0xFFC62828)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapScreen(
-    onBackClick: () -> Unit = {}
-) {
+fun MapScreen(navController: NavController) {
     var showFullImageDialog by remember { mutableStateOf(false) }
 
-    // Colores del tema institucional
-    val headerFooterBg = Color(0xFFC7DCB8) // Verde claro institucional
-    val darkGreen = Color(0xFF1B7339)      // Verde oscuro
-    val dotMagenta = Color(0xFFD81B60)    // Punto magenta sobre la Å
-    val crimsonRed = Color(0xFFC62828)    // Rojo para el texto inferior
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-    Scaffold(
-        topBar = {
-            // Encabezado con Menú + Logo UPÅPP + Avatar
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(headerFooterBg)
-                    .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Menú",
-                        tint = darkGreen,
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clickable { /* Abrir menú si aplica */ }
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    // Logo UPÅPP
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "UP",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = darkGreen
-                        )
-                        Box(contentAlignment = Alignment.TopCenter) {
-                            Text(
-                                text = "A",
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = darkGreen
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .offset(y = (-2).dp)
-                                    .size(5.dp)
-                                    .clip(CircleShape)
-                                    .background(dotMagenta)
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            CustomAppDrawer(
+                onNavigateToCalendar = {
+                    navController.navigate(Screen.CalendarEvents.route)
+                },
+                onCloseDrawer = {
+                    scope.launch { drawerState.close() }
+                }
+            )
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                AppTopBar(
+                    onMenuClick = {
+                        scope.launch { drawerState.open() }
+                    },
+                    onProfileClick = {
+                        /* Acción al presionar perfil */
+                    }
+                )
+            },
+            bottomBar = {
+                BottomAppBar(
+                    containerColor = GreenBottomBarMap,
+                    contentPadding = PaddingValues(0.dp),
+                    modifier = Modifier.height(68.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(
+                            onClick = {
+                                navController.navigate(Screen.Home.route) {
+                                    popUpTo(Screen.Home.route) { inclusive = false }
+                                    launchSingleTop = true
+                                }
+                            },
+                            modifier = Modifier.size(56.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Home,
+                                contentDescription = "Ir al Inicio",
+                                tint = Color(0xFF047435),
+                                modifier = Modifier.size(52.dp)
                             )
                         }
-                        Text(
-                            text = "PP",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF707070)
-                        )
                     }
                 }
-
-                // Avatar de Perfil
+            },
+            containerColor = Color.White
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp, vertical = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // --- ICONO MAPA / PIN DE UBICACIÓN ---
                 Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFF3E1A3)),
+                    modifier = Modifier.size(90.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo1),
-                        contentDescription = "Perfil",
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
-        },
-        bottomBar = {
-            // Barra inferior verde con botón de Inicio
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(headerFooterBg)
-                    .navigationBarsPadding()
-                    .padding(vertical = 10.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                IconButton(onClick = onBackClick) {
                     Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = "Inicio",
-                        tint = darkGreen,
-                        modifier = Modifier.size(36.dp)
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "Ubicación",
+                        tint = Color(0xFF81C784),
+                        modifier = Modifier.size(80.dp)
                     )
                 }
-            }
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(Color.White)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // --- ICONO MAPA / PIN DE UBICACIÓN ---
-            Box(
-                modifier = Modifier
-                    .size(90.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Ubicación",
-                    tint = Color(0xFF81C784),
-                    modifier = Modifier.size(80.dp)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // --- TÍTULO PRINCIPAL ---
+                Text(
+                    text = "CROQUIS 2026",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color.Black
                 )
-            }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
-            // --- TÍTULO PRINCIPAL ---
-            Text(
-                text = "CROQUIS 2026",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Black,
-                color = Color.Black
-            )
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            // --- TARJETA VISTA PREVIA DEL CROQUIS ---
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { showFullImageDialog = true },
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.croquis),
-                    contentDescription = "Croquis de Espacios Académicos",
-                    contentScale = ContentScale.FillWidth,
+                // --- TARJETA VISTA PREVIA DEL CROQUIS ---
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(6.dp)
+                        .clickable { showFullImageDialog = true },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.croquis),
+                        contentDescription = "Croquis de Espacios Académicos",
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(36.dp))
+
+                // --- TEXTO / ENLACE DE ABRIR MAPA ---
+                Text(
+                    text = "Croquis UPA 2026",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = CrimsonRed,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable { showFullImageDialog = true }
                 )
             }
-
-            Spacer(modifier = Modifier.height(36.dp))
-
-            // --- TEXTO / ENLACE DE ABRIR MAPA ---
-            Text(
-                text = "Croquis UPA 2026",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium,
-                color = crimsonRed,
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable { showFullImageDialog = true }
-            )
         }
     }
 

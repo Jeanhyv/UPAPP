@@ -1,4 +1,4 @@
-package com.example.upapp.screens
+package com.example.upapp.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,10 +15,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material3.*
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,13 +32,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavController
 import com.example.upapp.R
+import com.example.upapp.components.AppTopBar
+import com.example.upapp.components.CustomAppDrawer
+import com.example.upapp.navigation.Screen
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
-// Modelo de datos para cada evento compatible con API 24
+// Modelo de datos
 data class EventItem(
     val year: Int,
-    val month: Int, // 1 = Enero, 6 = Junio, etc.
+    val month: Int,
     val day: Int,
     val dayNumber: String,
     val monthText: String,
@@ -49,20 +53,19 @@ data class EventItem(
     val cardBgColor: Color
 )
 
+val GreenBottomBarCalendar = Color(0xFFC4D6B0)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarEventsScreen(
-    onBackClick: () -> Unit = {}
-) {
+fun CalendarEventsScreen(navController: NavController) {
     var showFullImageDialog by remember { mutableStateOf(false) }
 
-    // Colores del tema
-    val headerFooterBg = Color(0xFFC7DCB8)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
     val darkGreen = Color(0xFF1B7339)
     val titleDarkColor = Color(0xFF103A4B)
-    val dotMagenta = Color(0xFFD81B60)
 
-    // Lista de eventos
     val allEvents = remember {
         listOf(
             EventItem(
@@ -100,7 +103,6 @@ fun CalendarEventsScreen(
         )
     }
 
-    // Lógica con Calendar compatible desde API 1
     val nextEvent = remember {
         val today = Calendar.getInstance()
         val currentYear = today.get(Calendar.YEAR)
@@ -115,190 +117,168 @@ fun CalendarEventsScreen(
         } ?: allEvents.last()
     }
 
-    Scaffold(
-        topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(headerFooterBg)
-                    .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Menú",
-                        tint = darkGreen,
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clickable { }
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "UP", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = darkGreen)
-                        Box(contentAlignment = Alignment.TopCenter) {
-                            Text(text = "A", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = darkGreen)
-                            Box(
-                                modifier = Modifier
-                                    .offset(y = (-2).dp)
-                                    .size(5.dp)
-                                    .clip(CircleShape)
-                                    .background(dotMagenta)
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            CustomAppDrawer(
+                onNavigateToCalendar = {
+                    navController.navigate(Screen.CalendarEvents.route)
+                },
+                onCloseDrawer = {
+                    scope.launch { drawerState.close() }
+                }
+            )
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                AppTopBar(
+                    onMenuClick = {
+                        scope.launch { drawerState.open() }
+                    },
+                    onProfileClick = {
+                        /* Acción al presionar perfil */
+                    }
+                )
+            },
+            bottomBar = {
+                BottomAppBar(
+                    containerColor = GreenBottomBarCalendar,
+                    contentPadding = PaddingValues(0.dp),
+                    modifier = Modifier.height(68.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(
+                            onClick = {
+                                navController.navigate(Screen.Home.route) {
+                                    popUpTo(Screen.Home.route) { inclusive = false }
+                                    launchSingleTop = true
+                                }
+                            },
+                            modifier = Modifier.size(56.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Home,
+                                contentDescription = "Ir al Inicio",
+                                tint = Color(0xFF047435),
+                                modifier = Modifier.size(52.dp)
                             )
                         }
-                        Text(text = "PP", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color(0xFF707070))
                     }
                 }
-
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFF3E1A3)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo1),
-                        contentDescription = "Perfil",
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
-        },
-        bottomBar = {
-            Box(
+            },
+            containerColor = Color.White
+        ) { paddingValues ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(headerFooterBg)
-                    .navigationBarsPadding()
-                    .padding(vertical = 10.dp),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
             ) {
-                IconButton(onClick = onBackClick) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                ) {
                     Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = "Inicio",
-                        tint = darkGreen,
-                        modifier = Modifier.size(36.dp)
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = null,
+                        tint = Color(0xFFEAB8C5),
+                        modifier = Modifier.size(38.dp)
                     )
-                }
-            }
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(Color.White)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 16.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(vertical = 4.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = null,
-                    tint = Color(0xFFEAB8C5),
-                    modifier = Modifier.size(38.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    text = "Pròximos eventos",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = titleDarkColor
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            SingleEventCardItem(event = nextEvent, titleColor = titleDarkColor)
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                HorizontalDivider(modifier = Modifier.weight(1f), thickness = 3.dp, color = darkGreen)
-                Text(
-                    text = "Calendario",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = titleDarkColor,
-                    modifier = Modifier.padding(horizontal = 12.dp)
-                )
-                HorizontalDivider(modifier = Modifier.weight(1f), thickness = 3.dp, color = darkGreen)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(260.dp)
-                    .clickable { showFullImageDialog = true },
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.calendario),
-                    contentDescription = "Vista previa del Calendario",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Button(
-                    onClick = { showFullImageDialog = true },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(54.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB5D8C5))
-                ) {
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = "Ver más",
-                        fontSize = 18.sp,
+                        text = "Próximos eventos",
+                        fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = titleDarkColor
                     )
                 }
 
-                Button(
-                    onClick = onBackClick,
+                Spacer(modifier = Modifier.height(10.dp))
+
+                SingleEventCardItem(event = nextEvent, titleColor = titleDarkColor)
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Row(
                     modifier = Modifier
-                        .weight(0.8f)
-                        .height(54.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCBDCE3))
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Regresar",
-                        tint = Color.Black,
-                        modifier = Modifier.size(28.dp)
+                    HorizontalDivider(modifier = Modifier.weight(1f), thickness = 3.dp, color = darkGreen)
+                    Text(
+                        text = "Calendario",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = titleDarkColor,
+                        modifier = Modifier.padding(horizontal = 12.dp)
                     )
+                    HorizontalDivider(modifier = Modifier.weight(1f), thickness = 3.dp, color = darkGreen)
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(260.dp)
+                        .clickable { showFullImageDialog = true },
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.calendario),
+                        contentDescription = "Vista previa del Calendario",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Button(
+                        onClick = { showFullImageDialog = true },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(54.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB5D8C5))
+                    ) {
+                        Text(
+                            text = "Ver más",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = titleDarkColor
+                        )
+                    }
+
+                    Button(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier
+                            .weight(0.8f)
+                            .height(54.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCBDCE3))
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Regresar",
+                            tint = Color.Black,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
                 }
             }
         }
