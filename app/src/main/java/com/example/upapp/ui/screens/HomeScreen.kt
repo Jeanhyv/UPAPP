@@ -25,7 +25,8 @@ import com.example.upapp.R
 import com.example.upapp.components.AppTopBar
 import com.example.upapp.components.AppDrawer
 import kotlinx.coroutines.launch
-
+import com.example.upapp.components.BannerItem
+import com.example.upapp.components.CarouselBanner
 // 🟢 Mantenemos los colores para los botones o elementos que siempre deban ser de la marca
 val GreenBarColor = Color(0xFFC7D6BA)
 val DarkGreenIcon = Color(0xFF1B5E20)
@@ -105,7 +106,9 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
-                BannerSection()
+                BannerSection(
+                    onAgroAlertsClick = onNavigateToAgroAlerts
+                )
                 Spacer(modifier = Modifier.height(24.dp))
 
                 GridMenuSection(
@@ -127,52 +130,35 @@ fun HomeScreen(
     }
 }
 
+// Reemplaza tu función BannerSection() en HomeScreen.kt por esta versión:
+
 @Composable
-fun BannerSection() {
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 24.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-    ) {
-        item {
-            Box(
-                modifier = Modifier
-                    .width(40.dp)
-                    .fillMaxHeight()
-                    // 🟢 CAMBIO: Color dinámico para los banners laterales
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-            )
-        }
+fun BannerSection(
+    onAgroAlertsClick: () -> Unit
+) {
+    // 🟢 Lista escalar de banners (aquí puedes agregar más en el futuro)
+    val bannerList = listOf(
+        BannerItem(
+            id = "agro",
+            imageResId = R.drawable.banner_agro,
+            contentDescription = "Banner Alertas Agro",
+            onClick = onAgroAlertsClick
+        ),
+        BannerItem(
+            id = "huerto",
+            imageResId = R.drawable.banner_huerto,
+            contentDescription = "Banner Huerto",
+            onClick = onAgroAlertsClick // O la acción que asignes a futuro
+        ),
+        BannerItem(
+            id = "incendio",
+            imageResId = R.drawable.banner_incendio,
+            contentDescription = "Banner Alerta Incendio",
+            onClick = onAgroAlertsClick // O la acción que asignes a futuro
+        )
+    )
 
-        item {
-            Box(
-                modifier = Modifier
-                    .width(300.dp)
-                    .fillMaxHeight()
-                    // 🟢 CAMBIO: Color dinámico para el banner central
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
-                Text(
-                    text = "BANNER CENTRAL",
-                    // 🟢 CAMBIO: El texto se vuelve blanco en modo oscuro
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-        }
-
-        item {
-            Box(
-                modifier = Modifier
-                    .width(40.dp)
-                    .fillMaxHeight()
-                    // 🟢 CAMBIO: Color dinámico
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-            )
-        }
-    }
+    CarouselBanner(banners = bannerList)
 }
 
 @Composable
