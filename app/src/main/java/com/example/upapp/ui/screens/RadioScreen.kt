@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
-import androidx.annotation.OptIn
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,9 +33,11 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.upapp.components.AppTopBar
 import com.example.upapp.components.AppDrawer
-import com.example.upapp.ui.theme.*
+import com.example.upapp.navigation.Screen
 import kotlinx.coroutines.launch
 
 // Función para verificar conectividad de red
@@ -48,11 +49,12 @@ fun isNetworkAvailable(context: Context): Boolean {
     return activeNetwork.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }
 
-@OptIn(UnstableApi::class)
+@androidx.annotation.OptIn(UnstableApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RadioScreen(
-    onBackClick: () -> Unit = {},
-    onNavigateToCalendar: () -> Unit = {}
+    navController: NavController = rememberNavController(),
+    onBackClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -125,9 +127,21 @@ fun RadioScreen(
         drawerState = drawerState,
         drawerContent = {
             AppDrawer(
+                onNavigateToNotifications = {
+                    scope.launch { drawerState.close() }
+                    // navController.navigate(Screen.Notifications.route)
+                },
                 onNavigateToCalendar = {
                     scope.launch { drawerState.close() }
-                    onNavigateToCalendar()
+                    navController.navigate(Screen.CalendarEvents.route)
+                },
+                onNavigateToSettings = {
+                    scope.launch { drawerState.close() }
+                    // navController.navigate(Screen.Settings.route)
+                },
+                onNavigateToHelpComments = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Screen.HelpComments.route)
                 },
                 onCloseDrawer = {
                     scope.launch { drawerState.close() }

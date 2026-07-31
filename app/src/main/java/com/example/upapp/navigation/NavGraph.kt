@@ -11,7 +11,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.upapp.screens.LoginScreen
-import com.example.upapp.screens.SettingsScreen
 import com.example.upapp.screens.SupportScreen
 import com.example.upapp.ui.screens.AgroAlertsScreen
 import com.example.upapp.ui.screens.CalendarEventsScreen
@@ -21,6 +20,7 @@ import com.example.upapp.ui.screens.HomeScreen
 import com.example.upapp.ui.screens.MapScreen
 import com.example.upapp.ui.screens.NotificationsScreen
 import com.example.upapp.ui.screens.RadioScreen
+import com.example.upapp.ui.screens.SettingsScreen // 🟢 Corregido paquete ui.screens
 import com.example.upapp.ui.screens.VehiclePassScreen
 import com.example.upapp.ui.theme.DarkGray
 
@@ -82,7 +82,7 @@ fun NavGraph(
                 onNavigateToSettings = {
                     navController.navigate(Screen.Settings.route)
                 },
-                onNavigateToHelpComments = { // 🟢 AGREGADO AQUÍ
+                onNavigateToHelpComments = {
                     navController.navigate(Screen.HelpComments.route)
                 },
                 onNavigateToNotifications = {
@@ -99,6 +99,7 @@ fun NavGraph(
         // 5. Tarjetón Vehicular
         composable(route = Screen.VehiclePass.route) {
             VehiclePassScreen(
+                navController = navController,
                 onBackClick = {
                     navController.popBackStack()
                 }
@@ -128,6 +129,7 @@ fun NavGraph(
         // 10. UPA Radio
         composable(route = Screen.Radio.route) {
             RadioScreen(
+                navController = navController,
                 onBackClick = {
                     navController.popBackStack()
                 }
@@ -139,20 +141,25 @@ fun NavGraph(
             HelpCommentsScreen(navController = navController)
         }
 
+        // 12. Notificaciones (🟢 Se eliminó la duplicada)
         composable(route = Screen.Notifications.route) {
             NotificationsScreen(
+                navController = navController,
                 onBackClick = {
                     navController.popBackStack()
                 }
             )
         }
 
-        //Settings
+        // 13. Ajustes / Configuración
         composable(route = Screen.Settings.route) {
             SettingsScreen(
-                isDarkTheme = isDarkTheme, // 🟢 Toma el valor que viene desde arriba
-                onThemeChange = onThemeChange, // 🟢 Ejecuta la función que viene desde arriba
-                onBackClick = { navController.popBackStack() }
+                isDarkTheme = isDarkTheme,
+                onThemeChange = onThemeChange, // 🟢 Conectado al parámetro de NavGraph
+                navController = navController,
+                onBackClick = {
+                    navController.popBackStack()
+                }
             )
         }
     }

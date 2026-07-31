@@ -47,12 +47,21 @@ fun HelpCommentsScreen(navController: NavController) {
         drawerState = drawerState,
         drawerContent = {
             AppDrawer(
+                onNavigateToNotifications = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Screen.Notifications.route)
+                },
                 onNavigateToCalendar = {
                     scope.launch { drawerState.close() }
                     navController.navigate(Screen.CalendarEvents.route)
                 },
+                onNavigateToSettings = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Screen.Settings.route)
+                },
                 onNavigateToHelpComments = {
                     scope.launch { drawerState.close() }
+                    navController.navigate(Screen.HelpComments.route)
                 },
                 onCloseDrawer = {
                     scope.launch { drawerState.close() }

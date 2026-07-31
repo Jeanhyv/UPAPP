@@ -22,9 +22,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.upapp.R
 import com.example.upapp.components.AppTopBar
 import com.example.upapp.components.AppDrawer
+import com.example.upapp.navigation.Screen
 import com.example.upapp.ui.components.QrCardView
 import kotlinx.coroutines.launch
 
@@ -64,6 +67,7 @@ private val sampleVehiclePass = VehiclePassUiData(
 @Composable
 fun VehiclePassScreen(
     vehiclePass: VehiclePassUiData = sampleVehiclePass,
+    navController: NavController = rememberNavController(),
     onBackClick: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {}
 ) {
@@ -74,9 +78,21 @@ fun VehiclePassScreen(
         drawerState = drawerState,
         drawerContent = {
             AppDrawer(
+                onNavigateToNotifications = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Screen.Notifications.route)
+                },
                 onNavigateToCalendar = {
                     scope.launch { drawerState.close() }
-                    onNavigateToCalendar()
+                    navController.navigate(Screen.CalendarEvents.route)
+                },
+                onNavigateToSettings = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Screen.Settings.route)
+                },
+                onNavigateToHelpComments = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Screen.HelpComments.route)
                 },
                 onCloseDrawer = {
                     scope.launch { drawerState.close() }
@@ -329,5 +345,7 @@ private fun VehicleDetail(
 )
 @Composable
 private fun VehiclePassScreenPreview() {
-    VehiclePassScreen()
+    VehiclePassScreen(
+        navController = rememberNavController()
+    )
 }
