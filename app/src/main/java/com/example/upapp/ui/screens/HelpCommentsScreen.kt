@@ -2,7 +2,6 @@ package com.example.upapp.ui.screens
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,7 +12,6 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,16 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.upapp.components.AppTopBar
 import com.example.upapp.components.AppDrawer
+import com.example.upapp.components.AppTopBar
 import com.example.upapp.navigation.Screen
 import kotlinx.coroutines.launch
 
-// Colores del módulo
 val TealHelpText = Color(0xFF00796B)
 val LightTealCard = Color(0xFFE0F2F1)
 val GreenBottomBarHelp = Color(0xFFC4D6B0)
@@ -54,6 +50,9 @@ fun HelpCommentsScreen(navController: NavController) {
                 onNavigateToCalendar = {
                     scope.launch { drawerState.close() }
                     navController.navigate(Screen.CalendarEvents.route)
+                },
+                onNavigateToHelpComments = {
+                    scope.launch { drawerState.close() }
                 },
                 onCloseDrawer = {
                     scope.launch { drawerState.close() }
@@ -80,12 +79,7 @@ fun HelpCommentsScreen(navController: NavController) {
                         contentAlignment = Alignment.Center
                     ) {
                         IconButton(
-                            onClick = {
-                                navController.navigate(Screen.Home.route) {
-                                    popUpTo(Screen.Home.route) { inclusive = false }
-                                    launchSingleTop = true
-                                }
-                            },
+                            onClick = { navController.popBackStack() },
                             modifier = Modifier.size(56.dp)
                         ) {
                             Icon(
@@ -108,7 +102,7 @@ fun HelpCommentsScreen(navController: NavController) {
                     .padding(horizontal = 24.dp, vertical = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 1. Encabezado
+                // Encabezado
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
@@ -130,7 +124,7 @@ fun HelpCommentsScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // 2. Sección de Preguntas Frecuentes (FAQ)
+                // Preguntas Frecuentes
                 Text(
                     text = "Preguntas Frecuentes",
                     fontSize = 18.sp,
@@ -153,7 +147,7 @@ fun HelpCommentsScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 3. Formulario para enviar comentario
+                // Formulario
                 Text(
                     text = "Envíanos tu opinión o sugerencia",
                     fontSize = 18.sp,
@@ -255,7 +249,7 @@ fun HelpCommentsScreen(navController: NavController) {
 }
 
 @Composable
-fun FaqItem(question: String, answer: String) {
+private fun FaqItem(question: String, answer: String) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(

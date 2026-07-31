@@ -74,6 +74,9 @@ fun NavGraph(
                 },
                 onNavigateToVehiclePass = {
                     navController.navigate(Screen.VehiclePass.route)
+                },
+                onNavigateToHelpComments = { // 🟢 AGREGADO AQUÍ
+                    navController.navigate(Screen.HelpComments.route)
                 }
             )
         }
@@ -121,7 +124,7 @@ fun NavGraph(
             )
         }
 
-        // 11. Ayuda y Comentarios (INCLUIDO DENTRO DEL NAVHOST)
+        // 11. Ayuda y Comentarios
         composable(route = Screen.HelpComments.route) {
             HelpCommentsScreen(navController = navController)
         }

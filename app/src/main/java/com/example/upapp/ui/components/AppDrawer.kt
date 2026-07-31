@@ -22,6 +22,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
+import com.example.upapp.navigation.Screen
 
 // Colores del Drawer
 val DrawerBgColor = Color(0xFFC7D6BA)     // Verde claro de fondo
@@ -111,9 +113,9 @@ fun AppDrawer(
                 onClick = { /* Próximamente */ }
             )
 
-            // AYUDA Y COMENTARIOS
+            // 🟢 AYUDA Y COMENTARIOS (EJECUTA TANTO EL CALLBACK COMO LA ACCIÓN DIRECTA)
             DrawerMenuItem(
-                icon = Icons.Default.HelpOutline,
+                icon = Icons.Default.DateRange,
                 text = "Ayuda y Comentarios",
                 iconTint = DrawerIconGreen,
                 onClick = {
@@ -221,3 +223,5 @@ private fun DrawerMenuItem(
         )
     }
 }
+
+// 🟢 ALIAS DE COMPATIBILIDAD POR SI ALGUNA PANTALLA AÚN USA LOS NOMBRES ANTIGUOS

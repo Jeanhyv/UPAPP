@@ -39,6 +39,7 @@ fun HomeScreen(
     onNavigateToCalendar: () -> Unit = {},
     onNavigateToDocuments: () -> Unit = {},
     onNavigateToAgroAlerts: () -> Unit = {},
+    onNavigateToHelpComments: () -> Unit = {}, // 👈 AGREGA ESTA LÍNEA AQUÍ
     onNavigateToVehiclePass: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -49,6 +50,7 @@ fun HomeScreen(
         drawerContent = {
             AppDrawer(
                 onNavigateToCalendar = onNavigateToCalendar,
+                onNavigateToHelpComments = onNavigateToHelpComments, // 🟢 ¡AQUÍ FALTABA PASARLO!
                 onCloseDrawer = {
                     scope.launch { drawerState.close() }
                 }
