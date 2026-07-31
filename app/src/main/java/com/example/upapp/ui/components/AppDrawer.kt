@@ -35,6 +35,7 @@ val DotMagenta = Color(0xFFD81B60)
 fun AppDrawer(
     onNavigateToNotifications: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
     onNavigateToHelpComments: () -> Unit = {},
     onCloseDrawer: () -> Unit = {}
 ){
@@ -114,7 +115,10 @@ fun AppDrawer(
                 icon = Icons.Default.Settings,
                 text = "Configuración",
                 iconTint = DrawerIconGreen,
-                onClick = { /* Próximamente */ }
+                onClick = {
+                    onCloseDrawer()
+                    onNavigateToSettings()
+                }
             )
 
             // 🟢 AYUDA Y COMENTARIOS (EJECUTA TANTO EL CALLBACK COMO LA ACCIÓN DIRECTA)

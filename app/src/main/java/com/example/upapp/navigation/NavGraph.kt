@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.upapp.screens.LoginScreen
+import com.example.upapp.screens.SettingsScreen
 import com.example.upapp.screens.SupportScreen
 import com.example.upapp.ui.screens.AgroAlertsScreen
 import com.example.upapp.ui.screens.CalendarEventsScreen
@@ -26,7 +27,9 @@ import com.example.upapp.ui.theme.DarkGray
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    startDestination: String = Screen.Login.route
+    startDestination: String = Screen.Login.route,
+    isDarkTheme: Boolean = false,
+    onThemeChange: (Boolean) -> Unit = {}
 ) {
     NavHost(
         navController = navController,
@@ -75,6 +78,9 @@ fun NavGraph(
                 },
                 onNavigateToVehiclePass = {
                     navController.navigate(Screen.VehiclePass.route)
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Screen.Settings.route)
                 },
                 onNavigateToHelpComments = { // 🟢 AGREGADO AQUÍ
                     navController.navigate(Screen.HelpComments.route)
@@ -138,6 +144,15 @@ fun NavGraph(
                 onBackClick = {
                     navController.popBackStack()
                 }
+            )
+        }
+
+        //Settings
+        composable(route = Screen.Settings.route) {
+            SettingsScreen(
+                isDarkTheme = isDarkTheme, // 🟢 Toma el valor que viene desde arriba
+                onThemeChange = onThemeChange, // 🟢 Ejecuta la función que viene desde arriba
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

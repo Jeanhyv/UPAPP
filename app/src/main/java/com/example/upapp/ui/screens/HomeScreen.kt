@@ -26,10 +26,10 @@ import com.example.upapp.components.AppTopBar
 import com.example.upapp.components.AppDrawer
 import kotlinx.coroutines.launch
 
-// Colores institucionales
+// 🟢 Mantenemos los colores para los botones o elementos que siempre deban ser de la marca
 val GreenBarColor = Color(0xFFC7D6BA)
 val DarkGreenIcon = Color(0xFF1B5E20)
-val BackgroundWhite = Color(0xFFFFFFFF)
+// Ya no usamos BackgroundWhite, usaremos MaterialTheme.colorScheme.background
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +40,8 @@ fun HomeScreen(
     onNavigateToCalendar: () -> Unit = {},
     onNavigateToDocuments: () -> Unit = {},
     onNavigateToAgroAlerts: () -> Unit = {},
-    onNavigateToHelpComments: () -> Unit = {}, // 👈 AGREGA ESTA LÍNEA AQUÍ
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToHelpComments: () -> Unit = {},
     onNavigateToVehiclePass: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -52,6 +53,7 @@ fun HomeScreen(
             AppDrawer(
                 onNavigateToNotifications = onNavigateToNotifications,
                 onNavigateToCalendar = onNavigateToCalendar,
+                onNavigateToSettings = onNavigateToSettings,
                 onNavigateToHelpComments = onNavigateToHelpComments,
                 onCloseDrawer = {
                     scope.launch { drawerState.close() }
@@ -72,7 +74,8 @@ fun HomeScreen(
             },
             bottomBar = {
                 BottomAppBar(
-                    containerColor = GreenBarColor,
+                    // 🟢 CAMBIO: Usamos surfaceVariant para que en modo claro sea grisáceo/blanco y en oscuro se vuelva gris oscuro/negro
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     contentPadding = PaddingValues(0.dp)
                 ) {
                     Box(
@@ -83,7 +86,8 @@ fun HomeScreen(
                             Icon(
                                 imageVector = Icons.Default.Home,
                                 contentDescription = "Inicio",
-                                tint = DarkGreenIcon,
+                                // 🟢 CAMBIO: Adaptamos el icono al color de la superficie
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(36.dp)
                             )
                         }
@@ -94,7 +98,8 @@ fun HomeScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(BackgroundWhite)
+                    // 🟢 CAMBIO PRINCIPAL: Esto hace que el fondo pase de blanco a negro según el Switch
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -107,8 +112,8 @@ fun HomeScreen(
                     onRadioClick = onNavigateToRadio,
                     onMapClick = onNavigateToMap,
                     onCalendarClick = onNavigateToCalendar,
-                    onDocumentsClick = onNavigateToDocuments,
-                    onAgroAlertsClick = onNavigateToAgroAlerts,
+                    onDocumentsClick = onNavigateToDocuments,   // 🟢 Corregido
+                    onAgroAlertsClick = onNavigateToAgroAlerts, // 🟢 Corregido
                     onVehicleClick = onNavigateToVehiclePass
                 )
 
@@ -136,7 +141,8 @@ fun BannerSection() {
                 modifier = Modifier
                     .width(40.dp)
                     .fillMaxHeight()
-                    .background(Color.Gray)
+                    // 🟢 CAMBIO: Color dinámico para los banners laterales
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             )
         }
 
@@ -145,10 +151,13 @@ fun BannerSection() {
                 modifier = Modifier
                     .width(300.dp)
                     .fillMaxHeight()
-                    .background(Color(0xFFF6F0E6))
+                    // 🟢 CAMBIO: Color dinámico para el banner central
+                    .background(MaterialTheme.colorScheme.surface)
             ) {
                 Text(
                     text = "BANNER CENTRAL",
+                    // 🟢 CAMBIO: El texto se vuelve blanco en modo oscuro
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
@@ -159,7 +168,8 @@ fun BannerSection() {
                 modifier = Modifier
                     .width(40.dp)
                     .fillMaxHeight()
-                    .background(Color.Gray)
+                    // 🟢 CAMBIO: Color dinámico
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             )
         }
     }
@@ -270,6 +280,7 @@ fun ActionButtonsSection(
             modifier = Modifier
                 .weight(1f)
                 .height(56.dp),
+            // Los colores de estos botones se pueden mantener fijos (branding) ya que el texto oscuro contrasta bien
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA6C9B7)),
             shape = RoundedCornerShape(16.dp)
         ) {

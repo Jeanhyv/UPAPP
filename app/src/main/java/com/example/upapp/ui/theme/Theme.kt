@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -26,12 +27,32 @@ private val LightColorScheme = lightColorScheme(
     surfaceVariant = LightSage
 )
 
+// 🟢 NUEVO: Creamos la paleta para el modo oscuro
+private val DarkColorScheme = darkColorScheme(
+    primary = PrimaryGreen,
+    onPrimary = Color.White,
+    secondary = LightGreen,
+    onSecondary = DarkGray,
+    tertiary = RosePink,
+    background = Color(0xFF121212), // Fondo oscuro estándar
+    onBackground = Color.White,     // Textos blancos sobre el fondo oscuro
+    surface = Color(0xFF1E1E1E),    // Superficies oscuras (como tarjetas)
+    onSurface = Color.White,        // Textos blancos sobre superficies
+    surfaceVariant = Color(0xFF2D2D2D)
+)
+
 @Composable
 fun UPAPPTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = LightColorScheme
+    // 🟢 CORRECCIÓN: Elegimos la paleta dependiendo del valor de darkTheme
+    val colorScheme = if (darkTheme) {
+        DarkColorScheme
+    } else {
+        LightColorScheme
+    }
+
     val view = LocalView.current
 
     if (!view.isInEditMode) {
@@ -51,7 +72,6 @@ fun UPAPPTheme(
     )
 }
 
-// Función auxiliar para obtener la Activity de manera segura desde cualquier Context
 private tailrec fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
     is ContextWrapper -> baseContext.findActivity()
