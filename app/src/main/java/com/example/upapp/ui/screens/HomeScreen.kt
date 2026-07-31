@@ -34,6 +34,7 @@ val BackgroundWhite = Color(0xFFFFFFFF)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    onNavigateToNotifications: () -> Unit = {},
     onNavigateToRadio: () -> Unit = {},
     onNavigateToMap: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
@@ -49,8 +50,9 @@ fun HomeScreen(
         drawerState = drawerState,
         drawerContent = {
             AppDrawer(
+                onNavigateToNotifications = onNavigateToNotifications,
                 onNavigateToCalendar = onNavigateToCalendar,
-                onNavigateToHelpComments = onNavigateToHelpComments, // 🟢 ¡AQUÍ FALTABA PASARLO!
+                onNavigateToHelpComments = onNavigateToHelpComments,
                 onCloseDrawer = {
                     scope.launch { drawerState.close() }
                 }

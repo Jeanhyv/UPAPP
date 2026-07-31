@@ -33,10 +33,11 @@ val DotMagenta = Color(0xFFD81B60)
 
 @Composable
 fun AppDrawer(
+    onNavigateToNotifications: () -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
     onNavigateToHelpComments: () -> Unit = {},
     onCloseDrawer: () -> Unit = {}
-) {
+){
     var searchText by remember { mutableStateOf("") }
 
     ModalDrawerSheet(
@@ -92,7 +93,10 @@ fun AppDrawer(
                 icon = Icons.Default.Notifications,
                 text = "Notificaciones",
                 iconTint = Color(0xFFD81B60),
-                onClick = { /* Próximamente */ }
+                onClick = {
+                    onCloseDrawer()
+                    onNavigateToNotifications()
+                }
             )
 
             // CALENDARIO

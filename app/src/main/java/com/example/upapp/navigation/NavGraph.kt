@@ -18,6 +18,7 @@ import com.example.upapp.ui.screens.DocumentsScreen
 import com.example.upapp.ui.screens.HelpCommentsScreen
 import com.example.upapp.ui.screens.HomeScreen
 import com.example.upapp.ui.screens.MapScreen
+import com.example.upapp.ui.screens.NotificationsScreen
 import com.example.upapp.ui.screens.RadioScreen
 import com.example.upapp.ui.screens.VehiclePassScreen
 import com.example.upapp.ui.theme.DarkGray
@@ -77,6 +78,9 @@ fun NavGraph(
                 },
                 onNavigateToHelpComments = { // 🟢 AGREGADO AQUÍ
                     navController.navigate(Screen.HelpComments.route)
+                },
+                onNavigateToNotifications = {
+                    navController.navigate(Screen.Notifications.route)
                 }
             )
         }
@@ -127,6 +131,14 @@ fun NavGraph(
         // 11. Ayuda y Comentarios
         composable(route = Screen.HelpComments.route) {
             HelpCommentsScreen(navController = navController)
+        }
+
+        composable(route = Screen.Notifications.route) {
+            NotificationsScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
