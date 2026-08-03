@@ -69,7 +69,14 @@ fun AgroAlertsScreen(navController: NavController) {
                 },
                 onCloseDrawer = {
                     scope.launch { drawerState.close() }
-                }
+                },
+                onLogout = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true } // Limpia el historial para no regresar con "Atrás"
+                    }
+                },
+
             )
         }
     ) {

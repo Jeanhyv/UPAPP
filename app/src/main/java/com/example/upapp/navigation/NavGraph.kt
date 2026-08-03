@@ -19,11 +19,12 @@ import com.example.upapp.ui.screens.LoginScreen
 import com.example.upapp.ui.screens.MapScreen
 import com.example.upapp.ui.screens.NotificationsScreen
 import com.example.upapp.ui.screens.RadioScreen
-import com.example.upapp.ui.screens.RegisterScreen // 👈 ASEGÚRATE DE TENER ESTO
+import com.example.upapp.ui.screens.RegisterScreen
 import com.example.upapp.ui.screens.SettingsScreen
-import com.example.upapp.ui.screens.SupportScreen   // 👈 ASEGÚRATE DE TENER ESTO
+import com.example.upapp.ui.screens.SupportScreen
 import com.example.upapp.ui.screens.VehiclePassScreen
 import com.example.upapp.ui.theme.DarkGray
+
 @Composable
 fun NavGraph(
     navController: NavHostController,
@@ -35,7 +36,7 @@ fun NavGraph(
         navController = navController,
         startDestination = startDestination
     ) {
-// Pantalla de Login
+        // 1. Pantalla de Login
         composable(route = Screen.Login.route) {
             LoginScreen(
                 onLoginSuccess = {
@@ -46,13 +47,13 @@ fun NavGraph(
                 onForgotPasswordClick = {
                     navController.navigate(Screen.Support.route)
                 },
-                onRegisterClick = { // 👈 Navega a la pantalla de Registro
+                onRegisterClick = {
                     navController.navigate(Screen.Register.route)
                 }
             )
         }
 
-// Pantalla de Registro
+        // Pantalla de Registro
         composable(route = Screen.Register.route) {
             RegisterScreen(
                 onRegisterSuccess = {
@@ -104,6 +105,12 @@ fun NavGraph(
                 },
                 onNavigateToNotifications = {
                     navController.navigate(Screen.Notifications.route)
+                },
+                // 🔴 AQUÍ SE AGREGA LA NAVEGACIÓN PARA CERRAR SESIÓN
+                onNavigateToLoginScreen = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true } // Limpia la pila para no poder regresar con "Atrás"
+                    }
                 }
             )
         }
@@ -158,7 +165,7 @@ fun NavGraph(
             HelpCommentsScreen(navController = navController)
         }
 
-        // 12. Notificaciones (🟢 Se eliminó la duplicada)
+        // 12. Notificaciones
         composable(route = Screen.Notifications.route) {
             NotificationsScreen(
                 navController = navController,
@@ -172,7 +179,7 @@ fun NavGraph(
         composable(route = Screen.Settings.route) {
             SettingsScreen(
                 isDarkTheme = isDarkTheme,
-                onThemeChange = onThemeChange, // 🟢 Conectado al parámetro de NavGraph
+                onThemeChange = onThemeChange,
                 navController = navController,
                 onBackClick = {
                     navController.popBackStack()

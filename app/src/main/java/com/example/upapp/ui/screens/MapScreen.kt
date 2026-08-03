@@ -67,6 +67,12 @@ fun MapScreen(navController: NavController) {
                     scope.launch { drawerState.close() }
                     navController.navigate(Screen.HelpComments.route)
                 },
+                onLogout = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true } // Limpia el historial para no regresar con "Atrás"
+                    }
+                },
                 onCloseDrawer = {
                     scope.launch { drawerState.close() }
                 }

@@ -43,7 +43,8 @@ fun HomeScreen(
     onNavigateToAgroAlerts: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     onNavigateToHelpComments: () -> Unit = {},
-    onNavigateToVehiclePass: () -> Unit = {}
+    onNavigateToVehiclePass: () -> Unit = {},
+    onNavigateToLoginScreen: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -56,6 +57,10 @@ fun HomeScreen(
                 onNavigateToCalendar = onNavigateToCalendar,
                 onNavigateToSettings = onNavigateToSettings,
                 onNavigateToHelpComments = onNavigateToHelpComments,
+                onLogout = {
+                    // 🔴 Acción para cerrar sesión y regresar al Login limpiando el historial
+                    onNavigateToLoginScreen() // (O puedes definir un onNavigateToLogin en los parámetros de HomeScreen)
+                },
                 onCloseDrawer = {
                     scope.launch { drawerState.close() }
                 }
