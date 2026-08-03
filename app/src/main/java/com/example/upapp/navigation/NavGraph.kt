@@ -10,20 +10,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.upapp.screens.LoginScreen
-import com.example.upapp.screens.SupportScreen
 import com.example.upapp.ui.screens.AgroAlertsScreen
 import com.example.upapp.ui.screens.CalendarEventsScreen
 import com.example.upapp.ui.screens.DocumentsScreen
 import com.example.upapp.ui.screens.HelpCommentsScreen
 import com.example.upapp.ui.screens.HomeScreen
+import com.example.upapp.ui.screens.LoginScreen
 import com.example.upapp.ui.screens.MapScreen
 import com.example.upapp.ui.screens.NotificationsScreen
 import com.example.upapp.ui.screens.RadioScreen
-import com.example.upapp.ui.screens.SettingsScreen // 🟢 Corregido paquete ui.screens
+import com.example.upapp.ui.screens.RegisterScreen // 👈 ASEGÚRATE DE TENER ESTO
+import com.example.upapp.ui.screens.SettingsScreen
+import com.example.upapp.ui.screens.SupportScreen   // 👈 ASEGÚRATE DE TENER ESTO
 import com.example.upapp.ui.screens.VehiclePassScreen
 import com.example.upapp.ui.theme.DarkGray
-
 @Composable
 fun NavGraph(
     navController: NavHostController,
@@ -35,7 +35,7 @@ fun NavGraph(
         navController = navController,
         startDestination = startDestination
     ) {
-        // 1. Pantalla de Login (Autenticación)
+// Pantalla de Login
         composable(route = Screen.Login.route) {
             LoginScreen(
                 onLoginSuccess = {
@@ -45,6 +45,23 @@ fun NavGraph(
                 },
                 onForgotPasswordClick = {
                     navController.navigate(Screen.Support.route)
+                },
+                onRegisterClick = { // 👈 Navega a la pantalla de Registro
+                    navController.navigate(Screen.Register.route)
+                }
+            )
+        }
+
+// Pantalla de Registro
+        composable(route = Screen.Register.route) {
+            RegisterScreen(
+                onRegisterSuccess = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                },
+                onBackToLoginClick = {
+                    navController.popBackStack()
                 }
             )
         }

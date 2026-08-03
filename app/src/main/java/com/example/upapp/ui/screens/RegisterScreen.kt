@@ -21,49 +21,51 @@ import com.example.upapp.ui.theme.*
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(
-    onLoginSuccess: () -> Unit = {},
-    onForgotPasswordClick: () -> Unit = {},
-    onRegisterClick: () -> Unit = {}
+fun RegisterScreen(
+    onRegisterSuccess: () -> Unit = {},
+    onBackToLoginClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val userPrefs = remember { UserPreferences(context) }
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
-    // Credencial de prueba por defecto
-    val dummyEmail = "UPAPP@upatlautla.edu.mx"
-    val dummyPassword = "12345678"
-
-    fun authenticateUser() {
+    fun handleRegister() {
         errorMessage = null
 
-        if (email.isBlank() || password.isBlank()) {
-            errorMessage = "Por favor ingresa tu correo y contraseña."
+        if (email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+            errorMessage = "Por favor completa todos los campos."
+            return
+        }
+
+        if (!email.endsWith("@upatlautla.edu.mx")) {
+            errorMessage = "Ingresa un correo institucional válido (@upatlautla.edu.mx)."
+            return
+        }
+
+        if (password.length < 8) {
+            errorMessage = "La contraseña debe tener al menos 8 caracteres."
+            return
+        }
+
+        if (password != confirmPassword) {
+            errorMessage = "Las contraseñas no coinciden."
             return
         }
 
         isLoading = true
         scope.launch {
-            // 🟢 Valida contra los datos guardados en DataStore local
-            val isValidLocalUser = userPrefs.validateLogin(email, password)
-
-            // Usuario estático de prueba
-            val isDummyUser = email.trim().equals(dummyEmail, ignoreCase = true) && password == dummyPassword
-
+            // 🟢 Guardar usuario localmente en DataStore
+            userPrefs.registerUser(email, password)
             isLoading = false
-
-            if (isValidLocalUser || isDummyUser) {
-                onLoginSuccess() // Navega a HomeScreen
-            } else {
-                errorMessage = "Correo o contraseña incorrectos."
-            }
+            onRegisterSuccess() // Navega a HomeScreen
         }
     }
 
@@ -80,31 +82,14 @@ fun LoginScreen(
             horizontalAlignment = Alignment.Start
         ) {
             // Título UPAPP
-            Row(
-                modifier = Modifier.padding(bottom = 24.dp)
-            ) {
-                Text(
-                    text = "UP",
-                    fontSize = 38.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = DarkGreen
-                )
-                Text(
-                    text = "Å",
-                    fontSize = 38.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = CrimsonRed
-                )
-                Text(
-                    text = "PP",
-                    fontSize = 38.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = DarkGray
-                )
+            Row(modifier = Modifier.padding(bottom = 16.dp)) {
+                Text(text = "UP", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = DarkGreen)
+                Text(text = "Å", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = CrimsonRed)
+                Text(text = "PP", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = DarkGray)
             }
 
             Text(
-                text = "Bienvenido",
+                text = "Crear nueva cuenta",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = DarkGray,
@@ -118,7 +103,7 @@ fun LoginScreen(
                     email = it
                     if (errorMessage != null) errorMessage = null
                 },
-                placeholder = { Text("Email", color = DarkGray.copy(alpha = 0.6f)) },
+                placeholder = { Text("Correo institucional", color = DarkGray.copy(alpha = 0.6f)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 12.dp),
@@ -130,7 +115,6 @@ fun LoginScreen(
                     focusedBorderColor = PrimaryGreen
                 ),
                 singleLine = true,
-                isError = errorMessage != null,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 
@@ -143,7 +127,7 @@ fun LoginScreen(
                         if (errorMessage != null) errorMessage = null
                     }
                 },
-                placeholder = { Text("Contraseña", color = DarkGray.copy(alpha = 0.6f)) },
+                placeholder = { Text("Contraseña (8 dígitos)", color = DarkGray.copy(alpha = 0.6f)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 12.dp),
@@ -156,7 +140,31 @@ fun LoginScreen(
                     focusedBorderColor = PrimaryGreen
                 ),
                 singleLine = true,
-                isError = errorMessage != null,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
+
+            // Campo Confirmar Contraseña
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = {
+                    if (it.length <= 8) {
+                        confirmPassword = it
+                        if (errorMessage != null) errorMessage = null
+                    }
+                },
+                placeholder = { Text("Confirmar contraseña", color = DarkGray.copy(alpha = 0.6f)) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp),
+                shape = RoundedCornerShape(8.dp),
+                visualTransformation = PasswordVisualTransformation(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = CreamYellow.copy(alpha = 0.3f),
+                    focusedContainerColor = CreamYellow.copy(alpha = 0.3f),
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedBorderColor = PrimaryGreen
+                ),
+                singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
 
@@ -172,9 +180,8 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Botón Iniciar Sesión
             Button(
-                onClick = { authenticateUser() },
+                onClick = { handleRegister() },
                 enabled = !isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -192,37 +199,19 @@ fun LoginScreen(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text(
-                        text = "Iniciar sesión",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                    Text("Registrarse", fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 }
             }
 
-            // Enlace Olvidaste tu contraseña
             TextButton(
-                onClick = onForgotPasswordClick,
+                onClick = onBackToLoginClick,
                 modifier = Modifier
-                    .padding(top = 4.dp)
-                    .align(Alignment.Start)
+                    .padding(top = 8.dp)
+                    .align(Alignment.CenterHorizontally)
             ) {
                 Text(
-                    text = "¿Olvidaste tu contraseña?",
+                    text = "¿Ya tienes cuenta? Inicia sesión",
                     color = DarkGray,
-                    fontSize = 14.sp
-                )
-            }
-
-            // Botón Crear Cuenta
-            TextButton(
-                onClick = onRegisterClick,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text(
-                    text = "¿No tienes cuenta? Regístrate aquí",
-                    color = DarkGreen,
-                    fontWeight = FontWeight.Bold,
                     fontSize = 14.sp
                 )
             }
@@ -232,8 +221,8 @@ fun LoginScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
+fun RegisterScreenPreview() {
     UPAPPTheme {
-        LoginScreen()
+        RegisterScreen()
     }
 }

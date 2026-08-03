@@ -59,4 +59,6 @@ dependencies {
     implementation("com.google.zxing:core:3.5.4")
     implementation("androidx.media3:media3-exoplayer:1.2.1")
     implementation("androidx.media3:media3-common:1.2.1")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
 }
